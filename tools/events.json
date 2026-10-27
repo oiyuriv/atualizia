@@ -1,0 +1,31 @@
+{
+  "_sobre": "Agenda de eventos do Atualiz.IA (congressos, chamadas de artigos, editais, palestras, cursos). sources = feeds de associações, universidades e revistas; region = onde a fonte fica (jp = João Pessoa/Paraíba, ce = Fortaleza/Ceará), usado quando o texto não diz a cidade; area = a fonte já é da área de comunicação (não precisa de palavra da área no título); days = janela em dias para o que vem sem data. news = buscas no Google Notícias (últimos 45 dias).",
+  "sources": [
+    { "id": "compos", "name": "Compós", "site": "https://www.compos.org.br", "url": "https://www.compos.org.br/feed/", "area": true, "days": 90 },
+    { "id": "socine", "name": "Socine", "site": "https://socine.org", "url": "https://socine.org/feed/", "area": true, "days": 60 },
+    { "id": "abrapcorp", "name": "Abrapcorp", "site": "https://abrapcorp.org.br", "url": "https://abrapcorp.org.br/feed/", "area": true, "days": 90 },
+    { "id": "ufpb-com", "name": "UFPB", "site": "https://www.ufpb.br", "url": "https://www.ufpb.br/?s=comunica%C3%A7%C3%A3o&feed=rss2", "region": "jp" },
+    { "id": "ufpb-mestrado", "name": "UFPB", "site": "https://www.ufpb.br", "url": "https://www.ufpb.br/?s=mestrado&feed=rss2", "region": "jp" },
+    { "id": "ufpb-jornalismo", "name": "UFPB", "site": "https://www.ufpb.br", "url": "https://www.ufpb.br/?s=jornalismo&feed=rss2", "region": "jp" },
+    { "id": "ufpb-semiotica", "name": "UFPB", "site": "https://www.ufpb.br", "url": "https://www.ufpb.br/?s=semi%C3%B3tica&feed=rss2", "region": "jp", "days": 120 },
+    { "id": "ufpb-design", "name": "UFPB", "site": "https://www.ufpb.br", "url": "https://www.ufpb.br/?s=design&feed=rss2", "region": "jp" },
+    { "id": "uece-com", "name": "UECE", "site": "https://www.uece.br", "url": "https://www.uece.br/?s=comunica%C3%A7%C3%A3o&feed=rss2", "region": "ce" },
+    { "id": "culturasmidiaticas", "name": "Culturas Midiáticas (UFPB)", "site": "https://periodicos.ufpb.br/ojs2/index.php/cm", "url": "https://periodicos.ufpb.br/ojs2/index.php/cm/gateway/plugin/AnnouncementFeedGatewayPlugin/rss2", "region": "jp", "area": true, "days": 150 },
+    { "id": "ancora", "name": "Âncora (UFPB)", "site": "https://periodicos.ufpb.br/ojs2/index.php/ancora", "url": "https://periodicos.ufpb.br/ojs2/index.php/ancora/gateway/plugin/AnnouncementFeedGatewayPlugin/rss2", "region": "jp", "area": true, "days": 150 },
+    { "id": "rbcc", "name": "Revista Intercom", "site": "https://revistas.intercom.org.br/index.php/revistaintercom", "url": "https://revistas.intercom.org.br/index.php/revistaintercom/gateway/plugin/AnnouncementFeedGatewayPlugin/rss2", "area": true, "days": 150 }
+  ],
+  "news": [
+    "comunicação OR jornalismo OR publicidade congresso OR seminário OR simpósio OR palestra Fortaleza",
+    "comunicação OR jornalismo OR publicidade OR design evento OR inscrições Ceará",
+    "design OR publicidade OR marketing palestra OR workshop OR evento Fortaleza",
+    "Unifor OR UFC OR UECE comunicação OR jornalismo OR publicidade OR cinema evento OR inscrições",
+    "comunicação OR jornalismo OR mídia congresso OR seminário OR simpósio OR palestra \"João Pessoa\"",
+    "UFPB comunicação OR jornalismo OR mídia OR semiótica seminário OR congresso OR inscrições OR edital",
+    "mestrado comunicação OR jornalismo UFPB OR \"João Pessoa\" edital OR seleção",
+    "comunicação OR jornalismo OR design evento OR inscrições Paraíba",
+    "Intercom congresso OR chamada OR inscrições",
+    "semiótica congresso OR seminário OR colóquio OR minicurso OR encontro",
+    "chamada de artigos OR dossiê comunicação OR jornalismo OR semiótica revista",
+    "congresso OR seminário comunicação inscrições 2027"
+  ]
+}

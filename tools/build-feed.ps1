@@ -12,7 +12,8 @@ param(
   [string]$Out,
   [string]$Sources,
   [switch]$NoTranslate,
-  [switch]$NoImages
+  [switch]$NoImages,
+  [switch]$EventsOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -465,6 +466,11 @@ function Add-Translations($Items) {
   }
   Write-Host "Traduzidas: $done de $($todo.Count) matérias de fora"
 }
+
+# ---------- agenda de eventos ----------
+# fica em arquivo próprio (data/events.json); se der erro, as matérias seguem normais
+try { . (Join-Path $here 'build-events.ps1') } catch { Write-Warning "Agenda: $($_.Exception.Message)" }
+if ($EventsOnly) { return }
 
 # ---------- coleta ----------
 $cfg = Get-Content -Raw -Encoding UTF8 $Sources | ConvertFrom-Json

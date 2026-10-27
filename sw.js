@@ -1,5 +1,5 @@
 // Atualiz.IA: busca a versão mais nova quando tem internet e usa a cópia guardada quando não tem.
-const CACHE = 'atualizia-v1';
+const CACHE = 'atualizia-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -30,8 +30,8 @@ self.addEventListener('fetch', e => {
   }
 
   if (url.origin !== location.origin) return;
-  // o feed vem com ?t= para furar cache; offline, serve o último guardado
-  const key = url.pathname.endsWith('/data/feed.json') ? new Request(url.origin + url.pathname) : req;
+  // feed e agenda vêm com ?t= para furar cache; offline, serve o último guardado
+  const key = /\/data\/[^/]+\.json$/.test(url.pathname) ? new Request(url.origin + url.pathname) : req;
   e.respondWith(
     fetch(req)
       .then(res => {
