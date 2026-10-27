@@ -364,8 +364,9 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .rd-load .live{display:inline-block;margin-right:8px}
 
 /* aviso */
-.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 88px);z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100% - 32px);padding:10px 14px 10px 10px;border-radius:18px 18px 18px 6px;background:#e9f2ec;color:#06140c;font-weight:600;font-size:14px;line-height:1.3;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.85,.2,1),opacity .3s}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 88px);z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100% - 32px);padding:12px 14px 12px 16px;border-radius:16px;background:#e9f2ec;color:#06140c;font-weight:600;font-size:14px;line-height:1.3;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.85,.2,1),opacity .3s}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast.withcat{gap:10px;padding:10px 14px 10px 10px;border-radius:18px 18px 18px 6px}
 .toast .tc{flex:none;width:42px;height:42px;margin:-8px 0 -8px -4px}
 .toast .tm{flex:1;min-width:0}
 .toast button{font:600 12px/1 var(--mono);color:#0a7a3d;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
@@ -390,6 +391,10 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .shelfrow::after{content:"";position:absolute;left:-16px;right:-16px;bottom:-9px;height:9px;border-radius:2px;background:linear-gradient(180deg,#2c3c33,#121a16);border-top:1px solid rgba(169,255,208,.16);box-shadow:0 10px 18px rgba(0,0,0,.55)}
 .shelfrow .books{position:absolute;left:0;bottom:0;width:calc(100% - 112px);height:60px}
 .shelfrow .cat{position:absolute;right:0;bottom:-1px;width:110px;z-index:1}
+.scene.quiet{margin-top:40px}
+.scene.quiet .shelfrow{height:44px;margin-top:0}
+.scene.quiet .books{height:44px;width:calc(100% - 92px)}
+.scene.quiet .cat{width:86px}
 .empty .cat,.endnote .cat{width:104px;margin:-6px auto 8px}
 
 /* eventos */
@@ -437,8 +442,6 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .evrow span{flex:none;font:500 10.5px/1.5 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
 .evrow b{font-weight:600;font-size:14.5px;text-align:right}
 .subacts.three{grid-template-columns:repeat(3,1fr)}
-.purrnote{display:flex;align-items:center;gap:10px;margin-top:20px;padding:10px 14px 10px 8px;border-radius:18px;background:var(--s2);border:1px dashed var(--line2);color:var(--muted);font-size:13px;line-height:1.4}
-.purrnote .cat{flex:none;width:48px}
 .tabs .badge.pin{animation:pinpulse 2.2s infinite}
 @keyframes pinpulse{0%{box-shadow:0 0 0 0 rgba(61,242,140,.6)}70%{box-shadow:0 0 0 8px rgba(61,242,140,0)}100%{box-shadow:0 0 0 0 rgba(61,242,140,0)}}
 /* a equipe, na aba Você */
@@ -610,10 +613,10 @@ async function loadFeed(manual) {
     const before = FEED && FEED.updated;
     setFeed(f);
     try { localStorage.setItem(FEED_KEY, JSON.stringify(f)); } catch (e) {}
-    if (manual) toast(before === f.updated ? 'Tudo em dia por aqui. Nada novo ainda.' : 'Trouxe matérias fresquinhas.', null, null, 'peirce', before === f.updated ? 'idle' : 'happy');
+    if (manual) toast(before === f.updated ? 'Você já está com o mais recente.' : 'Feed atualizado.');
     return true;
   } catch (e) {
-    if (manual) toast('Sem conexão agora. Mostrando o que já estava guardado.', null, null, 'umberto');
+    if (manual) toast('Sem conexão agora. Mostrando o que já estava salvo.');
     return false;
   }
 }
@@ -726,10 +729,9 @@ function toggleSave(id, force) {
   const on = force ?? !S.saved[id];
   if (on && !S.saved[id]) {
     S.saved[id] = Object.assign(snap(it), { sv: Date.now() }); learn(it, 0.8);
-    const shelfName = it.tg && it.tg[0] ? tagLabel(it.tg[0]) : 'Cultura';
-    toast(pick(['Guardei na estante. Miau.', `Arquivei na prateleira de ${shelfName}.`, 'Anotado no meu caderninho.', 'Mais uma pra coleção!']), 'Ver', () => { shelf = 'saved'; go('saved'); }, 'umberto', 'happy');
+    toast('Salva na estante.', 'Ver', () => { shelf = 'saved'; go('saved'); });
   }
-  else if (!on && S.saved[id]) { delete S.saved[id]; toast('Devolvi ao acervo.', null, null, 'umberto'); }
+  else if (!on && S.saved[id]) { delete S.saved[id]; toast('Tirada da estante.'); }
   save();
   document.querySelectorAll(`[data-act="save"][data-id="${id}"]`).forEach(b => b.classList.toggle('on', on));
   updBadge();
@@ -746,7 +748,7 @@ function hideItem(id, wrap) {
     requestAnimationFrame(() => { wrap.style.height = '0px'; wrap.style.marginBottom = '0px'; });
     setTimeout(() => wrap.remove(), 520);
   }
-  toast('Menos disso, anotado. Vou lembrar.', 'Desfazer', () => { delete S.hidden[id]; learn(it, 1.5, true); save(); renderFeed(true); }, 'peirce');
+  toast('Menos disso, anotado.', 'Desfazer', () => { delete S.hidden[id]; learn(it, 1.5, true); save(); renderFeed(true); });
 }
 function markRead(id, r) {
   const it = getItem(id); if (!it) return;
@@ -777,7 +779,7 @@ function opened(it) {
 function celebrate() {
   confetti();
   const n = streak();
-  toast(n > 1 ? `Meta batida! ${n} dias seguidos. Ronrom.` : 'Meta do dia batida! Ronrom.', null, null, 'peirce', 'happy');
+  toast(n > 1 ? `Meta batida! ${n} dias seguidos.` : 'Meta do dia batida!');
 }
 
 // ---------- tradução no aparelho (para o que o coletor ainda não traduziu e para o modo leitura) ----------
@@ -892,7 +894,6 @@ const CATS = {
   lucia: { name: 'Lúcia', role: 'cuida da agenda de eventos', nod: 'Homenagem a Lúcia Santaella, a grande semioticista brasileira.', fur: '#a6b1ab', line: '#58625d', chest: '#f1f4f2', eye: '#141a16', ink: '#2c322f', whisk: '#ffffff', frame: '#e9dc8a', glasses: 'cateye' },
   peirce: { name: 'Peirce', role: 'acompanha sua meta de leitura', nod: 'Homenagem a Charles S. Peirce, um dos fundadores da semiótica.', fur: '#eba65f', line: '#8d5626', chest: '#f9e2c0', eye: '#1b140e', ink: '#5b3612', whisk: '#fff4e2', frame: '#141a16', glasses: 'square', stripe: '#c97c36' }
 };
-const pick = a => a[Math.floor(Math.random() * a.length)];
 function catEyes(c, mood) {
   const arc = (x, up) => `<path d="M${x - 5} ${up ? 47.5 : 45.5}q5 ${up ? -6 : 4.5} 10 0" fill="none" stroke="${c.ink}" stroke-width="2.4" stroke-linecap="round"/>`;
   if (mood === 'happy') return arc(47, 1) + arc(73, 1);
@@ -957,9 +958,13 @@ function books(seed) {
   }
   return `<svg class="books" viewBox="0 0 480 60" preserveAspectRatio="xMinYMax slice" aria-hidden="true">${out}</svg>`;
 }
-// gato sentado na prateleira falando num balão; text já vem em HTML seguro
+// gato sentado na prateleira falando num balão (só para evento do seu interesse); text já vem em HTML seguro
 function scene(who, text, mood = 'idle', extra = '', id = '') {
   return `<div class="scene"${id ? ` id="${id}"` : ''}><div class="bubble"><b>${CATS[who].name}</b>${text}${extra}</div><div class="shelfrow">${books(hash(who + dayKey()))}${cat(who, mood, true)}</div></div>`;
+}
+// a mesma prateleira, com o gato quieto
+function shelfCat(who, mood = 'idle') {
+  return `<div class="scene quiet"><div class="shelfrow">${books(hash(who + dayKey()))}${cat(who, mood, true)}</div></div>`;
 }
 
 function cardHtml(it, kind) {
@@ -1054,7 +1059,7 @@ function renderFeed(reset) {
   feedShown += next.length;
   if (feedShown >= feedList.length) {
     box.insertAdjacentHTML('beforeend', feedList.length
-      ? `<div class="endnote">${cat('peirce', 'sleep', true)}<b>Você chegou ao fim.</b>Vou tirar um cochilo. A cada 2 horas eu busco novidades sozinho.</div>`
+      ? `<div class="endnote">${cat('peirce', 'sleep', true)}<b>Você chegou ao fim.</b>O Atualiz.IA busca novidades sozinho a cada 2 horas.</div>`
       : `<div class="endnote">${cat('peirce', 'happy', true)}<b>Tudo lido por aqui.</b>${feedTag ? 'Tente outro tema ou veja os recentes.' : 'Volte daqui a pouco: chegam matérias novas a cada 2 horas.'}</div>`);
   }
 }
@@ -1125,16 +1130,14 @@ function renderSaved() {
   const agenda = Object.keys(S.ev.saved).map(evGet).filter(Boolean).sort((a, b) => evSortKey(a) - evSortKey(b));
   const list = shelf === 'saved' ? saved : reads.filter(Boolean);
   const nRead = reads.filter(Boolean).length;
-  const say = shelf === 'agenda'
-    ? scene('lucia', agenda.length ? `Sua agenda tem <em>${agenda.length} ${agenda.length === 1 ? 'evento' : 'eventos'}</em>. Eu cuido das datas.` : 'Agenda vazia. Na aba Eventos, toque no marcador pra guardar aqui.', agenda.length ? 'happy' : 'idle')
-    : shelf === 'saved'
-      ? scene('umberto', saved.length ? `Guardei <em>${saved.length} ${saved.length === 1 ? 'matéria' : 'matérias'}</em> pra você. Tudo catalogado, da mais nova pra mais antiga.` : 'Estante vazia por enquanto. Arrasta um card pra direita que eu guardo aqui.', saved.length ? 'happy' : 'idle')
-      : scene('peirce', nRead ? `Você já leu <em>${nRead}</em> por aqui. Cada nota me ajuda a escolher melhor.` : 'Nenhuma leitura ainda. Leia e dê uma nota: é assim que eu aprendo.');
+  const decor = shelfCat(shelf === 'agenda' ? 'lucia' : shelf === 'saved' ? 'umberto' : 'peirce');
   let body;
   if (shelf === 'agenda') {
-    body = agenda.length ? agenda.map(e => evCard(e, false)).join('') : '';
+    body = agenda.length ? agenda.map(e => evCard(e, false)).join('') : `<div class="empty"><b>Agenda vazia.</b>Na aba Eventos, toque no marcador de um evento para guardar aqui.</div>`;
   } else if (!list.length) {
-    body = '';
+    body = shelf === 'saved'
+      ? `<div class="empty"><b>Nada salvo ainda.</b>Toque no marcador de uma matéria ou arraste o card para a direita.</div>`
+      : `<div class="empty"><b>Nenhuma leitura ainda.</b>Leia e dê uma nota: cada nota ensina o feed.</div>`;
   } else {
     body = `<div class="list">${list.map(it => {
       const r = S.read[it.id];
@@ -1145,7 +1148,7 @@ function renderSaved() {
     }).join('')}</div>`;
   }
   v.innerHTML = `<h1 class="vh">Sua <em>estante</em></h1>
-    <div style="padding:16px 18px 0"><div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Salvas · ${saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidas · ${nRead}</button><button class="${shelf === 'agenda' ? 'on' : ''}" data-act="shelf" data-v="agenda">Agenda · ${agenda.length}</button></div></div>${say}<div style="height:10px"></div>${body}`;
+    <div style="padding:16px 18px 0"><div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Salvas · ${saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidas · ${nRead}</button><button class="${shelf === 'agenda' ? 'on' : ''}" data-act="shelf" data-v="agenda">Agenda · ${agenda.length}</button></div></div>${decor}<div style="height:10px"></div>${body}`;
 }
 
 function renderMe() {
@@ -1215,22 +1218,11 @@ function refreshHello() {
   const h1 = $('#v-feed .hello h1'); if (h1 && FEED) h1.innerHTML = helloText();
   const sc = $('#helloScene'); if (sc) sc.outerHTML = helloScene();
 }
-// quem fala no topo do feed: a Lúcia se tem evento novo perto, o Peirce se a meta já foi, senão uma dica do dia
+// a Lúcia só aparece no topo do feed quando chegou evento do seu interesse (João Pessoa, Ceará ou mestrado)
 function helloScene() {
   const np = EVD ? evNewPrio() : [];
-  if (np.length) return scene('lucia', `Psiu! ${np.length === 1 ? 'Chegou <em>um evento</em>' : `Chegaram <em>${np.length} eventos</em>`} ${esc(placesOf(np))}.`, 'wow', '<br><button class="bl" data-act="tab" data-tab="events">Ver a agenda</button>', 'helloScene');
-  const left = S.set.goal - today();
-  if (left <= 0) return scene('peirce', 'Meta batida! Agora é leitura por prazer. <em>Ronrom.</em>', 'happy', '', 'helloScene');
-  const tips = [
-    ['umberto', 'Arrasta um card pra direita que eu guardo na estante pra você.'],
-    ['peirce', 'Dá nota no que ler: as carinhas me ensinam do que você gosta.'],
-    ['lucia', 'Na aba <em>Eventos</em> eu junto congressos, chamadas e editais. João Pessoa e Ceará vêm primeiro.'],
-    ['peirce', `Faltam <em>${left}</em> hoje. Uma de cada vez, sem pressa.`],
-    ['umberto', 'Matéria de fora? Eu traduzo. Abre no modo leitura que fica tudo em português.'],
-    ['peirce', 'Arrasta pra esquerda o que não te interessa. Eu anoto e mostro menos.']
-  ];
-  const [who, text] = tips[hash(dayKey()) % tips.length];
-  return scene(who, text, 'idle', '', 'helloScene');
+  if (!np.length) return '<div id="helloScene"></div>';
+  return scene('lucia', `Psiu! ${np.length === 1 ? 'Chegou <em>um evento</em>' : `Chegaram <em>${np.length} eventos</em>`} ${esc(placesOf(np))}.`, 'wow', '<br><button class="bl" data-act="tab" data-tab="events">Ver a agenda</button>', 'helloScene');
 }
 function since(t) { const a = ago(t); return a === 'agora' ? 'agora mesmo' : a === 'ontem' ? 'ontem' : /\d (jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/.test(a) ? 'em ' + a : 'há ' + a; }
 
@@ -1352,14 +1344,14 @@ function mestCard(all) {
   const head = ms.length
     ? `<h3>${ms.length === 1 ? 'Saiu <em>um edital</em> na área.' : `Saíram <em>${ms.length} editais</em> na área.`}</h3><p>Confira se é o programa que você quer. Mesmo se não for, cada seleção mostra o que costuma ser pedido.</p>`
       + ms.slice(0, 3).map(e => { const mn = evMain(e); return `<button class="mrow" data-ev="${e.id}"><b>${esc(e.t)}</b><span>${mn ? `${mn.lab ? mn.lab + '<br>' : ''}${mn.b ? fmtShort(mn.a).split(' ')[0] + '–' + fmtShort(mn.b) : fmtShort(mn.a)}` : 's.d.'}</span></button>`; }).join('')
-    : `<h3>Nenhum edital <em>aberto</em> ainda.</h3><p>Fico de olho nos editais de mestrado da UFPB em comunicação, jornalismo, semiótica e design. Quando sair, aparece aqui e eu aviso.</p>`;
+    : `<h3>Nenhum edital <em>aberto</em> ainda.</h3><p>O app acompanha os editais de mestrado da UFPB em comunicação, jornalismo, semiótica e design. Quando sair, aparece aqui com um aviso.</p>`;
   return `<div class="mest"><div class="kick">rumo ao mestrado · João Pessoa</div>${head}
     <div class="mfoot"><button class="chip" data-act="evcalls">${calls} ${calls === 1 ? 'chamada de artigos aberta' : 'chamadas de artigos abertas'}</button><span>publicar conta no currículo</span></div></div>`;
 }
 function renderEvents() {
   const v = $('#v-events');
   const head = `<h1 class="vh">Eventos</h1><p class="vsub">Congressos, chamadas, editais e palestras da área. João Pessoa e Ceará primeiro.</p>`;
-  if (!EVD) { v.innerHTML = head + scene('lucia', 'Estou buscando a agenda. Um instante…') + '<div class="skel" style="height:120px"></div>'.repeat(3); return; }
+  if (!EVD) { v.innerHTML = head + shelfCat('lucia') + '<div class="skel" style="height:120px"></div>'.repeat(3); return; }
   const all = EVS.filter(evVisible);
   const isNew = e => e.fsd > evSeenAt;
   const inReg = (e, k) => k === 'all' || (k === 'prio' ? evPrio(e) >= 2 : e.r === k);
@@ -1370,27 +1362,27 @@ function renderEvents() {
   const list = inR.filter(e => !evKind || e.k === evKind);
   const dated = list.filter(e => evMain(e)).sort((a, b) => evSortKey(a) - evSortKey(b));
   const undated = list.filter(e => !evMain(e)).sort((a, b) => b.pd - a.pd);
+  // a Lúcia só fala quando chegou novidade do seu interesse; senão fica quieta na prateleira
   const fresh = all.filter(e => isNew(e) && evPrio(e) >= 2);
-  const say = fresh.length
-    ? `Achei <em>${fresh.length} ${fresh.length === 1 ? 'novidade' : 'novidades'}</em> ${esc(placesOf(fresh))} desde a sua última visita. Marquei com um alfinete.`
-    : regN.prio ? `Tem <em>${regN.prio} ${regN.prio === 1 ? 'coisa' : 'coisas'}</em> em João Pessoa e no Ceará na agenda. Sigo de olho e aviso quando chegar mais.`
-      : 'Nada novo em João Pessoa ou no Ceará por enquanto. Sigo farejando a cada 2 horas.';
+  const top = fresh.length
+    ? scene('lucia', `Achei <em>${fresh.length} ${fresh.length === 1 ? 'novidade' : 'novidades'}</em> ${esc(placesOf(fresh))} desde a sua última visita. Marquei com um alfinete.`, 'wow')
+    : shelfCat('lucia');
   const regChips = REG_CHIPS.filter(([k]) => regN[k] || k === 'prio' || k === 'all').map(([k, l]) => `<button class="chip${evReg === k ? ' on' : ''}" data-act="evreg" data-k="${k}">${l}<small>${regN[k]}</small></button>`).join('');
   const kindChips = [`<button class="chip${!evKind ? ' on' : ''}" data-act="evkind" data-k="">Todos os tipos</button>`]
     .concat(KIND_ORDER.filter(k => kindN[k]).map(k => `<button class="chip${evKind === k ? ' on' : ''}" data-act="evkind" data-k="${k}">${KIND_PL[k]}<small>${kindN[k]}</small></button>`)).join('');
   let body = '';
   if (!list.length) {
-    body = `<div class="empty">${cat('lucia', 'sleep', true)}<b>${evReg === 'prio' ? 'Nada perto de você agora.' : 'Nada por aqui.'}</b>${evReg === 'prio' ? 'Quando aparecer algo em João Pessoa ou no Ceará, eu aviso. Enquanto isso, dá uma olhada no Brasil todo.' : 'Tente outro filtro.'}
+    body = `<div class="empty"><b>${evReg === 'prio' ? 'Nada perto de você agora.' : 'Nada por aqui.'}</b>${evReg === 'prio' ? 'Quando aparecer algo em João Pessoa ou no Ceará, o app avisa. Enquanto isso, dá uma olhada no Brasil todo.' : 'Tente outro filtro.'}
       <div class="btns" style="justify-content:center;margin-top:14px"><button class="btn sm" data-act="evreg" data-k="all">Ver tudo</button></div></div>`;
   } else {
     if (dated.length) body += `<div class="sec-h"><h2>Próximas <em>datas</em></h2><span class="aux">${dated.length}</span></div>${dated.map(e => evCard(e, isNew(e))).join('')}`;
     if (undated.length) body += `<div class="sec-h"><h2>Sem data <em>(s.d.)</em></h2><span class="aux">a notícia não diz o dia</span></div>${undated.map(e => evCard(e, isNew(e))).join('')}`;
   }
   const names = Object.values(EVSRC).filter(s => s.id !== 'gnews' && s.ok).map(s => s.name);
-  v.innerHTML = `${head}${scene('lucia', say, fresh.length ? 'wow' : 'idle')}${mestCard(all)}
+  v.innerHTML = `${head}${top}${mestCard(all)}
     <div class="evchips"><div class="chips">${regChips}</div><div class="chips">${kindChips}</div></div>
     ${body}
-    <div class="endnote"><b>Fim da agenda.</b>Busco a cada 2 horas no Google Notícias${names.length ? ', ' + esc([...new Set(names)].join(', ')) : ''}. As datas são lidas das notícias: confira na página antes de se inscrever.</div>`;
+    <div class="endnote"><b>Fim da agenda.</b>Atualizada a cada 2 horas com Google Notícias${names.length ? ', ' + esc([...new Set(names)].join(', ')) : ''}. As datas são lidas das notícias: confira na página antes de se inscrever.</div>`;
 }
 
 function openEvent(id) {
@@ -1423,17 +1415,17 @@ function renderEvDetail(e) {
         <button data-act="evshare" data-id="${e.id}">${ICON.share}Enviar</button>
         <button data-act="evhide" data-id="${e.id}">${ICON.less}Não me interessa</button>
       </div>
-      <div class="purrnote">${cat('lucia')}<span>Li as datas direto da notícia. Confere na página antes de se inscrever, tá?</span></div>
+      <p class="srcline">As datas são lidas automaticamente da notícia. Confira na página antes de se inscrever.</p>
     </div>`;
 }
 function evToggleSave(id) {
   const e = evGet(id); if (!e) return;
-  if (S.ev.saved[id]) { delete S.ev.saved[id]; toast('Tirei da sua agenda.', null, null, 'lucia'); }
+  if (S.ev.saved[id]) { delete S.ev.saved[id]; toast('Tirado da agenda.'); }
   else {
     const o = {};
     ['id', 's', 'u', 'pub', 't', 'd', 'at', 'fs', 'k', 'r', 'pl', 'w', 'we', 'ds', 'dl', 'm'].forEach(k => { if (e[k] != null) o[k] = e[k]; });
     S.ev.saved[id] = Object.assign(o, { sv: Date.now() });
-    toast(pick(['Anotei na sua agenda.', 'Guardado. Eu cuido da data.', 'Tá na agenda, com carinho.']), 'Ver', () => { closeDetail(); shelf = 'agenda'; if (cur === 'saved') renderSaved(); else go('saved'); }, 'lucia', 'happy');
+    toast('Guardado na agenda.', 'Ver', () => { closeDetail(); shelf = 'agenda'; if (cur === 'saved') renderSaved(); else go('saved'); });
   }
   save();
   document.querySelectorAll(`.evc [data-act="evsave"][data-id="${id}"]`).forEach(b => b.classList.toggle('on', !!S.ev.saved[id]));
@@ -1460,7 +1452,7 @@ function evCalendar(e) {
   const url = URL.createObjectURL(file);
   const a = document.createElement('a'); a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
-  toast('Mandei pro calendário. Se o celular perguntar, é só confirmar.', null, null, 'lucia', 'happy');
+  toast('Arquivo de calendário criado. Se o celular perguntar, confirme.');
 }
 
 let feedDirty = false;
@@ -1693,10 +1685,11 @@ $('#rdScroll').addEventListener('scroll', () => {
 
 // ---------- avisos e festa ----------
 let toastT;
-// os avisos saem da boca de um dos gatos
-function toast(msg, label, fn, who = 'peirce', mood = 'idle') {
-  const t = $('#toast');
-  t.querySelector('.tc').innerHTML = cat(who, mood);
+// aviso simples; o gatinho só aparece falando quando chega evento do seu interesse
+function toast(msg, label, fn, who, mood = 'idle') {
+  const t = $('#toast'), tc = t.querySelector('.tc');
+  t.classList.toggle('withcat', !!who);
+  tc.hidden = !who; tc.innerHTML = who ? cat(who, mood) : '';
   t.querySelector('.tm').textContent = msg;
   const b = t.querySelector('button');
   b.hidden = !label; b.textContent = label || '';
@@ -1791,7 +1784,7 @@ function act(el, e) {
     case 'share': {
       const it = getItem(id);
       if (navigator.share) navigator.share({ title: title(it), url: it.u }).catch(() => {});
-      else { navigator.clipboard && navigator.clipboard.writeText(it.u); toast('Link copiado.', null, null, 'umberto'); }
+      else { navigator.clipboard && navigator.clipboard.writeText(it.u); toast('Link copiado.'); }
       break;
     }
     case 'evsave': e.preventDefault(); e.stopPropagation(); evToggleSave(id); break;
@@ -1802,19 +1795,19 @@ function act(el, e) {
     case 'evshare': {
       const ev = evGet(id); if (!ev) break;
       if (navigator.share) navigator.share({ title: ev.t, url: ev.u }).catch(() => {});
-      else { navigator.clipboard && navigator.clipboard.writeText(ev.u); toast('Link copiado.', null, null, 'lucia'); }
+      else { navigator.clipboard && navigator.clipboard.writeText(ev.u); toast('Link copiado.'); }
       break;
     }
     case 'evhide': {
       S.ev.hidden[id] = Date.now(); save(); closeDetail();
       if (cur === 'events') renderEvents();
-      toast('Combinado, tirei da lista.', 'Desfazer', () => { delete S.ev.hidden[id]; save(); if (cur === 'events') renderEvents(); }, 'lucia');
+      toast('Tirado da lista.', 'Desfazer', () => { delete S.ev.hidden[id]; save(); if (cur === 'events') renderEvents(); });
       break;
     }
     case 'less': { closeDetail(); const w = document.querySelector(`.swipe[data-id="${id}"]`); hideItem(id, w); break; }
     case 'exf': ex.f = { type: d.type, id: d.id }; ex.q = ''; renderExplore(); window.scrollTo(0, 0); break;
     case 'exback': ex.f = null; renderExplore(); window.scrollTo(0, 0); break;
-    case 'mute': { const s = d.src; if (S.muted[s]) delete S.muted[s]; else S.muted[s] = 1; save(); feedDirty = true; renderExplore(); toast(S.muted[s] ? `${SRC[s].name} não aparece mais no feed.` : `${SRC[s].name} voltou pro feed.`, null, null, 'umberto'); break; }
+    case 'mute': { const s = d.src; if (S.muted[s]) delete S.muted[s]; else S.muted[s] = 1; save(); feedDirty = true; renderExplore(); toast(S.muted[s] ? `${SRC[s].name} não aparece mais no feed.` : `${SRC[s].name} voltou pro feed.`); break; }
     case 'shelf': shelf = d.v; renderSaved(); break;
     case 'goal': S.set.goal = Math.min(20, Math.max(1, S.set.goal + +d.d)); if (S.daily) S.daily.items = S.daily.items.slice(0, S.set.goal); if (S.daily && S.daily.items.length < S.set.goal) S.daily = null; save(); feedDirty = true; renderMe(); renderRing(); break;
     case 'set': S.set[d.k] = !S.set[d.k]; save(); feedDirty = true; el.classList.toggle('on', S.set[d.k]); ITEMS.forEach(it => delete it._w); break;
@@ -1889,7 +1882,7 @@ function scrollToFeed() {
       if (cur === 'events') {
         const ok = await loadEvents();
         renderEvents(); S.ev.seen = Date.now(); save();
-        toast(ok ? 'Agenda em dia. Sigo de olho.' : 'Sem conexão. Mostrando a agenda guardada.', null, null, 'lucia');
+        toast(ok ? 'Agenda atualizada.' : 'Sem conexão. Mostrando a agenda guardada.');
       } else {
         await Promise.all([loadFeed(true), loadEvents()]);
         renderFeedView(); renderRing(); pingEvents();
