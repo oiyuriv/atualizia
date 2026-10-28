@@ -10,6 +10,9 @@
 #   w   data do evento (aaaa-mm-dd, ou aaaa-mm quando a notícia só diz o mês)   we  último dia
 #   ds  início das inscrições ou submissões   dl  prazo (inscrição, submissão)
 #   m   edital de mestrado ou doutorado da área em João Pessoa/UFPB
+#   ru  link da matéria original (quando veio pelo Google Notícias)   dx  já procurou os detalhes
+#   x   detalhes lidos do texto: val valor, pz prêmio, vag vagas, fmt presencial/online, loc local,
+#       how como se inscrever, req o que é pedido (lista), lk links de inscrição/edital ({u, t}), ex resumo
 
 $evCfg = Get-Content -Raw -Encoding UTF8 (Join-Path $here 'events.json') | ConvertFrom-Json
 $evOut = Join-Path (Split-Path $Out) 'events.json'
@@ -23,7 +26,7 @@ $EvRx = { param($p) New-Object Text.RegularExpressions.Regex($p, $RegexOpts) }
 # palavra da área: obrigatória para fontes gerais (universidades, Google Notícias)
 $EvArea = & $EvRx ('comunica[çc]|jornalis|publicid|publicit|propaganda|marketing|\bdesign|semi[óo]ti|semiolog|\bm[íi]dias?\b|midi[áa]tic|cinema|audiovisual|fotogra|' +
   'rela[çc][õo]es p[úu]blicas|linguag|lingu[íi]stic|\bletras\b|an[áa]lise do discurso|narrativ|tipogra|branding|artes visuais|cultura digital|redes sociais|podcast|' +
-  '\br[áa]dio|televis|streaming|ilustra[çc]|quadrinhos|\bPPGC\b|\bPPGJ\b|PPGCOM|intercom|comp[óo]s\b|socine|abrapcorp|sbpjor|expocom|desinforma|checagem|influenciad')
+  '\br[áa]dio\b|televis|streaming|ilustra[çc]|quadrinhos|\bPPGC\b|\bPPGJ\b|PPGCOM|intercom|comp[óo]s\b|socine|abrapcorp|sbpjor|expocom|desinforma|checagem|influenciad')
 # notícia sobre o que já passou, resultado, carta, entrevista, luta do UFC...
 $EvSkip = & $EvRx ('\banais\b|resultado|vencedor|recebe \d+ inscri|finalista|premiad|homolog|aprovad|nota p[úu]blica|carta aberta|carta em defesa|entrevista|\bjornal n[ºo°]|' +
   'faleceu|\bmorre|conclui|realizou|reuniu|encerrou|aconteceu|foi realizad|participou|participa\b|conquista|marca presen|marcou presen|amplia presen|com presen[çc]a d|[ée] apresentad|celebrou|' +
@@ -68,6 +71,7 @@ $EvMon = 'janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|out
 $EvDateRx = & $EvRx ("(?<d1>\d{1,2})(?:º|°)?(?:\s*(?:a|e|-|–|ao)\s*(?<d2>\d{1,2})(?:º|°)?)?\s+de\s+(?<mo>$EvMon)(?:\s+de\s+(?<y>20\d\d))?" +
   '|(?<![\w/])(?<nd>\d{1,2})/(?<nm>\d{1,2})(?:/(?<ny>20\d\d|\d\d))?(?![\w/])' +
   '|(?:nesta|neste|nessa|nesse|na pr[óo]xima|no pr[óo]ximo|na|no)\s+(?:segunda|ter[çc]a|quarta|quinta|sexta|s[áa]bado|domingo)(?:-feira)?,?\s*\((?<wdd>\d{1,2})(?:º|°)?\)' +
+  '|(?<wp>nesta|neste|nessa|nesse|na pr[óo]xima|no pr[óo]ximo)\s+(?<wd2>(?:segunda|ter[çc]a|quarta|quinta|sexta)-feira|s[áa]bado|domingo)\b(?!,?\s*\(\d)' +
   "|(?<om0>\bat[ée]|\bem|\bpara|no m[êe]s de)\s+(?<om>$EvMon)(?:\s+de\s+(?<oy>20\d\d))?")
 # palavra de prazo logo antes da data, sem outro número no meio ("inscrições até o dia 30 de novembro")
 $EvDlRx = & $EvRx '(at[ée]|prazo|encerra\w*|termina\w*|limite|prorroga\w*|[úu]ltimo dia)\b[^\d.;!?]*$'
@@ -110,6 +114,12 @@ function Get-EvDates([string[]]$Texts, [DateTime]$Pub) {
         # "nesta sexta (9)": o mês é o da notícia, ou o seguinte se o dia já passou
         $d1 = [int]$g['wdd'].Value; $mo = $Pub.Month
         if ($d1 -lt $Pub.Day - 3) { $mo++; if ($mo -gt 12) { $mo = 1; $y = $Pub.Year + 1 } }
+      } elseif ($g['wd2'].Success) {
+        # "no próximo domingo": o dia da semana seguinte à notícia
+        $wd = @{ seg = 1; ter = 2; qua = 3; qui = 4; sex = 5; 'sáb' = 6; sab = 6; dom = 0 }[$g['wd2'].Value.Substring(0, 3).ToLowerInvariant()]
+        $ahead = ($wd - [int]$Pub.DayOfWeek + 7) % 7
+        if ($ahead -eq 0 -and $g['wp'].Value -match 'pr') { $ahead = 7 }
+        $nd = $Pub.AddDays($ahead); $y = $nd.Year; $mo = $nd.Month; $d1 = $nd.Day
       } elseif ($g['om'].Success) {
         $mo = [int]$EvMonths[$g['om'].Value.ToLowerInvariant()]; $monthOnly = $true
         if ($g['oy'].Success) { $y = [int]$g['oy'].Value }
@@ -167,16 +177,16 @@ function Read-EvNode($Node, $Src) {
   if ($Src.id -eq 'gnews') {
     # título vem como "Título - Veículo" e o resumo só repete o título
     $sn = $Node.SelectSingleNode("*[local-name()='source']")
-    if ($null -ne $sn) { $pub = $sn.InnerText.Trim() }
+    if ($null -ne $sn) { $pub = $sn.InnerText.Trim(); $site = $sn.GetAttribute('url') }
     if ($pub -and $it.t.EndsWith(" - $pub")) { $it.t = $it.t.Substring(0, $it.t.Length - $pub.Length - 3).Trim() }
     elseif ($it.t -match '^(.*\S)\s+-\s+([^-]{2,80})$') { $it.t = $Matches[1]; if (-not $pub) { $pub = $Matches[2].Trim() } }
     $it.d = ''
+    return @{ it = $it; body = ''; html = ''; pub = $pub; site = $site }
   }
-  # o texto inteiro ajuda a achar as datas; avisos de revista vêm só na descrição
-  $body = ConvertFrom-Html (Get-Markup $Node $XP.content)
-  if (-not $body) { $body = ConvertFrom-Html (Get-Markup $Node $XP.desc) }
-  if ($body.Length -gt 2500) { $body = $body.Substring(0, 2500) }
-  @{ it = $it; body = $body; pub = $pub }
+  # o texto inteiro dá as datas e os detalhes (valor, vagas, o que pede); avisos de revista vêm só na descrição
+  $html = Get-Markup $Node $XP.content
+  if (-not $html) { $html = Get-Markup $Node $XP.desc }
+  @{ it = $it; body = (ConvertFrom-Html $html); html = $html; pub = $pub; site = $null }
 }
 
 function Get-EvInfo($It, $Src, [string]$Body, [DateTime]$Pub, [string]$Outlet) {
@@ -202,8 +212,117 @@ function Get-EvInfo($It, $Src, [string]$Body, [DateTime]$Pub, [string]$Outlet) {
     $c = $EvCities[$key]
     if ($c -and $c[1] -eq $region) { $city = $c[0]; break }
   }
-  $dates = Get-EvDates @($It.t, $It.d, $Body) $Pub
+  $dates = Get-EvDates @($It.t, $It.d, (Get-Start $Body 2500)) $Pub
   @{ k = $kind; r = $region; pl = $city; w = $dates.w; we = $dates.we; ds = $dates.ds; dl = $dates.dl; m = $mest }
+}
+function Get-Start([string]$s, [int]$n) { if ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s } }
+
+# ---------- detalhes de inscrição ----------
+# Do texto da notícia: valor, prêmio, vagas, presencial/online, local, o que é pedido, link de inscrição e um resumo.
+$EvMoneyRx = & $EvRx 'R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})?(?:\s?mil\b)?'
+$EvFeeCtx = & $EvRx '(inscri|taxa|valor|investimento|ingresso|custa|lote|pagamento|pre[çc]o|mensalidade|parcela)'
+$EvPrizeCtx = & $EvRx '(pr[êe]mi|premia|bolsa|aux[íi]lio|recompensa)'
+$EvFreeRx = & $EvRx 'gratuit[oa]s?\b|sem custo|entrada (franca|gratuita)|acesso (livre|gratuito)|sem taxa|n[ãa]o h[áa] (taxa|cobran)'
+$EvExemptRx = & $EvRx 'isen[çc][ãa]o'
+$EvSeatsRx = & $EvRx '(\d{1,4})\s+vagas'
+$EvOnlineRx = & $EvRx '\bonline\b|on-line|remot[oa]\b|\bvirtual\b|a dist[âa]ncia|\bEaD\b|youtube|google meet|\bzoom\b'
+$EvPresRx = & $EvRx 'presencia(l|is)\b|presencialmente'
+$EvHybridRx = & $EvRx 'h[íi]brid[oa]'
+$EvPlaceRx = & $EvRx '\b(?:no|na|nos|nas)\s+((?:audit[óo]rio|anfiteatro|centro de conven[çc][õo]es|centro cultural|centro de eventos|teatro|cineteatro|museu|biblioteca|pal[áa]cio|espa[çc]o|pr[ée]dio|bloco|sala|drag[ãa]o do mar|campus)\b[^.;:!?]{2,70})'
+$EvHowRx = & $EvRx '(?:pelo|pela|no|na|atrav[ée]s d[oa]|via)\s+(formul[áa]rio (?:eletr[ôo]nico|online|on-line|do Google)|site do evento)'
+$EvPlatforms = @(@('SIGAA', 'Pelo SIGAA'), @('Even3', 'Pela Even3'), @('Sympla', 'Pelo Sympla'), @('Doity', 'Pela Doity'))
+# o que a seleção ou a chamada pede (k = só para esses tipos)
+$EvReqs = @(
+  @{ l = 'Artigo completo'; rx = & $EvRx 'artigos? (completo|in[ée]dito|cient[íi]fico)|submiss[ãa]o de artigos?|envio de artigos?|recebe(m)? artigos?' }
+  @{ l = 'Resumo ou resumo expandido'; rx = & $EvRx 'resumos? expandidos?|envio de resumos?|submiss[ãa]o de resumos?' }
+  @{ l = 'Apresentação oral ou pôster'; rx = & $EvRx 'comunica[çc][ãa]o oral|apresenta[çc][ãa]o oral|p[ôo]steres?\b|\bbanners?\b|grupos? de trabalho|\bGTs?\b' }
+  @{ l = 'Pré-projeto de pesquisa'; rx = & $EvRx 'pr[ée]-?projeto|anteprojeto|projeto de pesquisa|proposta de pesquisa' }
+  @{ l = 'Prova escrita'; rx = & $EvRx 'prova escrita|prova de conhecimentos?|prova te[óo]rica|exame escrito|avalia[çc][ãa]o escrita' }
+  @{ l = 'Prova de língua estrangeira'; rx = & $EvRx 'profici[êe]ncia|l[íi]ngua estrangeira|prova de (ingl[êe]s|espanhol|franc[êe]s|idioma)' }
+  @{ l = 'Entrevista ou defesa do projeto'; rx = & $EvRx 'entrevista|argui[çc][ãa]o|defesa (oral )?do (pr[ée]-?)?projeto' }
+  @{ l = 'Análise do currículo (Lattes)'; rx = & $EvRx 'curr[íi]culo|lattes|an[áa]lise de t[íi]tulos|prova de t[íi]tulos' }
+  @{ l = 'Carta de intenção ou memorial'; rx = & $EvRx 'carta de (inten[çc][ãa]o|motiva[çc][ãa]o)|memorial' }
+  @{ l = 'Portfólio'; rx = & $EvRx 'portf[óo]lio' }
+  @{ l = 'Diploma de graduação'; rx = & $EvRx 'diploma|gradua[çc][ãa]o conclu[íi]da|concluintes|portadores? de diploma'; k = 'edital curso' }
+  @{ l = 'Reportagem ou trabalho já publicado'; rx = & $EvRx '(reportage(m|ns)|trabalhos?|mat[ée]rias?|produ[çc][õo]es) (publicad|veiculad|divulgad)'; k = 'premio' }
+  @{ l = 'Filme, curta ou vídeo'; rx = & $EvRx 'curtas?(-metragem)?\b|longas?(-metragem)?\b|v[íi]deos?\b|filmes?\b'; k = 'festival premio' }
+  @{ l = 'Dá para participar como ouvinte'; rx = & $EvRx '\bouvintes?\b'; k = 'congresso palestra curso evento' }
+  @{ l = 'Pagamento de taxa'; rx = & $EvRx 'taxa de inscri[çc][ãa]o|\bGRU\b|boleto' }
+)
+$EvLinkSkip = & $EvRx 'facebook\.com|twitter\.com|x\.com/intent|whatsapp|wa\.me|linkedin\.com|instagram\.com|t\.me/|telegram|pinterest|mailto:|\.(jpe?g|png|gif|webp|svg)(\?|$)|/tag/|/category/|/author/|wp-login|/feed/?$|news\.google'
+$EvLinkUrl = & $EvRx 'even3\.com|sympla\.com|doity\.com|sigaa|forms\.gle|docs\.google\.com/forms|typeform|jotform|inscri|submiss|edital|chamada|regulamento|\.pdf(\?|$)|/about/submissions'
+$EvLinkText = & $EvRx 'inscri|edital|regulamento|submiss|formul[áa]rio|chamada|site do evento|programa[çc][ãa]o'
+$EvAnchorRx = [regex]'(?is)<a\b[^>]*?href\s*=\s*["'']([^"''#][^"'']*)["''][^>]*>(.*?)</a>'
+
+function Get-EvLinks([string]$Html, [string]$Base) {
+  $out = New-Object Collections.ArrayList; $seen = @{}
+  $self = ($Base -replace '[?#].*$', '').TrimEnd('/')
+  foreach ($m in $EvAnchorRx.Matches($Html)) {
+    $u = Resolve-Url $m.Groups[1].Value $Base
+    if (-not $u -or $u -notmatch '^https?://' -or $EvLinkSkip.IsMatch($u) -or $seen.ContainsKey($u)) { continue }
+    if (($u -replace '[?#].*$', '').TrimEnd('/') -eq $self) { continue }
+    $t = ConvertFrom-Html $m.Groups[2].Value
+    if (-not ($EvLinkUrl.IsMatch($u) -or $EvLinkText.IsMatch($t))) { continue }
+    $seen[$u] = 1
+    # nome do botão: o texto do link, ou o que o endereço diz quando o texto é "clique aqui" ou o próprio endereço
+    if (-not $t -or $t.Length -lt 4 -or $t -match '^(clique|acesse|aqui|link|saiba|https?:|www\.)') {
+      $t = if ($u -match 'even3') { 'Inscrição na Even3' } elseif ($u -match 'sympla') { 'Inscrição no Sympla' } elseif ($u -match 'doity') { 'Inscrição na Doity' } elseif ($u -match 'sigaa') { 'Inscrição no SIGAA' } elseif ($u -match 'forms') { 'Formulário de inscrição' } elseif ($u -match '\.pdf') { 'Edital (PDF)' } else { Get-EvHost $u }
+    }
+    $t = $t.Substring(0, 1).ToUpper() + $t.Substring(1)
+    [void]$out.Add([ordered]@{ u = $u; t = (Limit-Text $t 60) })
+    if ($out.Count -ge 3) { break }
+  }
+  # plataforma de inscrição primeiro
+  , @($out | Sort-Object { if ($_.u -match 'even3|sympla|doity|sigaa|forms|typeform|jotform|inscri') { 0 } elseif ($_.u -match '\.pdf') { 1 } else { 2 } })
+}
+function Get-EvHost([string]$u) { try { ([Uri]$u).Host -replace '^www\.', '' } catch { $u } }
+
+function Get-EvDetails([string]$Text, [string]$Html, [string]$Base, [string]$Kind) {
+  if (-not $Text -or $Text.Length -lt 80) { return $null }
+  $x = [ordered]@{}
+  $fees = New-Object Collections.ArrayList; $prize = $null
+  foreach ($m in $EvMoneyRx.Matches($Text)) {
+    $pre = $Text.Substring([Math]::Max(0, $m.Index - 80), [Math]::Min(80, $m.Index))
+    $v = $m.Value -replace '\s+', ' '
+    if ($EvPrizeCtx.IsMatch($pre) -and -not $EvFeeCtx.IsMatch(($pre -split '[.;]')[-1])) { if (-not $prize) { $prize = $v } }
+    elseif ($EvFeeCtx.IsMatch($pre) -and -not $fees.Contains($v)) { [void]$fees.Add($v) }
+  }
+  if ($fees.Count) { $x.val = ($fees | Select-Object -First 3) -join ' / '; if ($EvExemptRx.IsMatch($Text)) { $x.val += ' (com pedido de isenção)' } }
+  elseif ($EvFreeRx.IsMatch($Text)) { $x.val = 'Gratuito' }
+  if ($prize) { $x.pz = $prize }
+  $s = $EvSeatsRx.Match($Text); if ($s.Success) { $x.vag = [int]$s.Groups[1].Value }
+  # presencial/online e local só fazem sentido para o que acontece num lugar (não para edital, chamada ou prêmio)
+  if ($Kind -notmatch '^(edital|chamada|premio)$') {
+    $on = $EvOnlineRx.IsMatch($Text); $pr = $EvPresRx.IsMatch($Text)
+    if ($EvHybridRx.IsMatch($Text) -or ($on -and $pr)) { $x.fmt = 'Presencial e online' } elseif ($on) { $x.fmt = 'Online' } elseif ($pr) { $x.fmt = 'Presencial' }
+    $p = $EvPlaceRx.Match($Text)
+    if ($p.Success) { $loc = ($p.Groups[1].Value -split ',')[0].Trim(); if ($loc -match '\s') { $x.loc = Limit-Text ($loc.Substring(0, 1).ToUpper() + $loc.Substring(1)) 70 } }
+  }
+  foreach ($pf in $EvPlatforms) { if ($Text -match "\b$($pf[0])\b") { $x.how = $pf[1]; break } }
+  if (-not $x.how) { $h = $EvHowRx.Match($Text); if ($h.Success) { $x.how = 'Pelo ' + $h.Groups[1].Value } }
+  $req = @(foreach ($r in $EvReqs) { if ((-not $r.k -or $r.k -split ' ' -contains $Kind) -and $r.rx.IsMatch($Text)) { $r.l } })
+  if ($req.Count) { $x.req = $req }
+  if ($Html) { $lk = Get-EvLinks $Html $Base; if ($lk.Count) { $x.lk = $lk } }
+  $x.ex = Limit-Text $Text 650
+  $x
+}
+
+# o miolo de uma página de notícia: parágrafos de verdade (sem menu nem rodapé), a partir do primeiro que fala do assunto
+function Get-PageArticle([string]$Html, [string]$Title) {
+  $paras = New-Object Collections.ArrayList
+  foreach ($m in [regex]::Matches($Html, '(?is)<p\b[^>]*>(.*?)</p>')) {
+    $t = ConvertFrom-Html $m.Groups[1].Value
+    if ($t.Length -ge 50) { [void]$paras.Add(@{ t = $t; h = $m.Groups[1].Value }) }
+  }
+  $want = Get-EvWords $Title; $start = 0
+  for ($i = 0; $i -lt [Math]::Min($paras.Count, 8); $i++) { if ((Get-EvOverlap $want (Get-EvWords $paras[$i].t)) -ge 0.25) { $start = $i; break } }
+  $keep = @($paras | Select-Object -Skip $start -First 25)
+  $desc = $null
+  foreach ($m in $MetaRx.Matches($Html)) {
+    if ($m.Value -match '(?i)(property|name)\s*=\s*["''](og:description|description)["'']') { $c = $ContentRx.Match($m.Value); if ($c.Success) { $desc = [Net.WebUtility]::HtmlDecode($c.Groups[1].Value).Trim(); break } }
+  }
+  # links só de dentro dos parágrafos da matéria (os do menu e da lateral ficam de fora)
+  @{ text = (@($keep | ForEach-Object { $_.t }) -join ' '); html = (@($keep | ForEach-Object { $_.h }) -join "`n"); desc = $desc }
 }
 
 # a mesma notícia em vários veículos: palavras que sobram tirando as genéricas
@@ -310,6 +429,9 @@ foreach ($x in $evFresh.Values) {
     id = $it.id; s = $src.id; u = $it.u; pub = $x.pub; t = $it.t; d = (Limit-Text $it.d 260)
     at = $at.ToString('o'); fs = $(if ($p -and $p.fs) { $p.fs } else { $evNowIso })
     k = $info.k; r = $info.r; pl = $info.pl; w = $info.w; we = $info.we; ds = $info.ds; dl = $info.dl; m = $(if ($info.m) { 1 } else { $null })
+    x = $null; ru = $null; dx = $null
+    # só para esta rodada (não vão pro arquivo): texto e HTML da notícia, site do veículo
+    _body = $x.body; _html = $x.html; _site = $x.site
   })
 }
 # o que saiu dos feeds continua enquanto a data não passar
@@ -319,15 +441,114 @@ foreach ($p in $evPrev.Values) {
   if (-not $at) { continue }
   $src = $evSrcIds[$p.s]
   if (-not (Test-EvAlive $p $at $(if ($src.days) { [int]$src.days } else { 60 }))) { continue }
-  foreach ($k in 'w', 'we', 'ds', 'dl', 'pl', 'pub', 'd', 'm') { if (-not $p.Contains($k)) { $p[$k] = $null } }
+  foreach ($k in 'w', 'we', 'ds', 'dl', 'pl', 'pub', 'd', 'm', 'x', 'ru', 'dx') { if (-not $p.Contains($k)) { $p[$k] = $null } }
   Add-EvKept $p
 }
+
+# ---------- detalhes ----------
+# Quem veio com texto (UFPB, UECE, revistas, associações) já tem os detalhes aqui. As do Google Notícias só trazem
+# o título e um link do Google: o Bing Notícias acha a matéria original pelo título e a página é lida direto.
+$evLookup = New-Object Collections.ArrayList
+foreach ($e in $evKept) {
+  if ($e._body) { $e.x = Get-EvDetails $e._body $e._html $e.u $e.k; continue }
+  $p = $evPrev[$e.id]
+  if ($p -and $p.dx) { foreach ($k in 'x', 'ru', 'dx') { $e[$k] = $p[$k] }; if (-not $e.d -and $p.d) { $e.d = $p.d }; continue }
+  if ($e.s -eq 'gnews' -and -not $e.dx -and $evLookup.Count -lt 15) { [void]$evLookup.Add($e) }
+}
+$EvStopWords = New-Object 'Collections.Generic.HashSet[string]' (, [string[]]('de da do das dos em no na nos nas para por com e o a os as um uma que ao aos se sua seu'.Split(' ')))
+function Get-EvWords([string]$t) {
+  $n = [regex]::Replace($t.ToLowerInvariant().Normalize([Text.NormalizationForm]::FormD), '\p{Mn}', '')
+  , @($n -split '[^a-z0-9]+' | Where-Object { $_.Length -ge 2 -and -not $EvStopWords.Contains($_) } | Select-Object -Unique)
+}
+function Get-EvOverlap($a, $b) {
+  if (-not $a.Count) { return 0 }
+  $n = 0; foreach ($w in $a) { if ($b -contains $w) { $n++ } }
+  $n / $a.Count
+}
+# outra matéria sobre o mesmo assunto também serve: pelo menos 3 palavras em comum, medidas pelo título mais curto
+function Get-EvMatch($a, $b) {
+  $n = 0; foreach ($w in $a) { if ($b -contains $w) { $n++ } }
+  if ($n -lt 3) { return 0 }
+  $n / [Math]::Min($a.Count, $b.Count)
+}
+function Read-EvPage($r) {
+  $len = [Math]::Min($r.bytes.Length, 800000)
+  $enc = [Text.Encoding]::UTF8
+  if ($r.charset) { try { $enc = [Text.Encoding]::GetEncoding($r.charset.Trim('"')) } catch { } }
+  $enc.GetString($r.bytes, 0, $len)
+}
+if ($evLookup.Count) {
+  Write-Host "Agenda: procurando a matéria original de $($evLookup.Count) notícias..."
+  $search = @{}
+  foreach ($e in $evLookup) { $e.dx = 1; $search[$e.id] = 'https://www.bing.com/news/search?q=' + [Uri]::EscapeDataString($e.t) + '&format=rss&setlang=pt-BR&cc=BR' }
+  $found = Get-Many ([string[]]@($search.Values)) $script:Http 8
+  $pages = @{}; $wpSearch = @{}
+  foreach ($e in $evLookup) {
+    $want = Get-EvWords $e.t; $best = $null; $bestScore = 0
+    $r = $found[$search[$e.id]]
+    if ($r -and -not $r.err) {
+      try {
+        $doc = Read-Feed (ConvertTo-Text $r.bytes $r.charset)
+        foreach ($n in $doc.SelectNodes("//*[local-name()='item']")) {
+          $l = Get-Text $n "*[local-name()='link']"
+          if ($l -match '[?&]url=([^&]+)') { $l = [Uri]::UnescapeDataString($Matches[1]) }
+          if ($l -notmatch '^https?://') { continue }
+          $score = Get-EvMatch $want (Get-EvWords (ConvertFrom-Html (Get-Text $n "*[local-name()='title']")))
+          if ($score -gt $bestScore) { $bestScore = $score; $best = $l }
+        }
+      } catch { }
+    }
+    if ($best -and $bestScore -ge 0.7) { $e.ru = $best; $pages[$best] = $e }
+    elseif ($e._site) {
+      # sem o Bing: muitos veículos são WordPress e a busca do próprio site devolve a matéria inteira
+      $q = (@($want) | Select-Object -First 7) -join ' '
+      $wpSearch[$e._site.TrimEnd('/') + '/?s=' + [Uri]::EscapeDataString($q) + '&feed=rss2'] = $e
+    }
+  }
+  $got = Get-Many ([string[]]@(@($pages.Keys) + @($wpSearch.Keys))) $script:PageHttp 8
+  $ok = 0
+  foreach ($u in @($pages.Keys)) {
+    $e = $pages[$u]; $r = $got[$u]
+    if (-not $r -or $r.err) { continue }
+    $art = Get-PageArticle (Read-EvPage $r) $e.t
+    if (-not $e.d -and $art.desc) { $e.d = Limit-Text $art.desc 260 }
+    $e._body = $art.text; $e.x = Get-EvDetails $art.text $art.html $u $e.k
+    if ($e.x) { $ok++ }
+  }
+  foreach ($u in @($wpSearch.Keys)) {
+    $e = $wpSearch[$u]; $r = $got[$u]
+    if (-not $r -or $r.err) { continue }
+    try {
+      $doc = Read-Feed (ConvertTo-Text $r.bytes $r.charset)
+      foreach ($n in $doc.SelectNodes("//*[local-name()='item']")) {
+        if ((Get-EvMatch (Get-EvWords $e.t) (Get-EvWords (ConvertFrom-Html (Get-Text $n "*[local-name()='title']")))) -lt 0.7) { continue }
+        $html = Get-Markup $n $XP.content
+        if (-not $html) { $html = Get-Markup $n $XP.desc }
+        $e.ru = Get-Text $n "*[local-name()='link']"
+        $e._body = ConvertFrom-Html $html
+        if (-not $e.d) { $e.d = Limit-Text (Clear-Summary (ConvertFrom-Html (Get-Markup $n $XP.desc))) 260 }
+        $e.x = Get-EvDetails $e._body $html $e.ru $e.k
+        if ($e.x) { $ok++ }
+        break
+      }
+    } catch { }
+  }
+  # o texto completo pode trazer as datas que o título não tinha
+  foreach ($e in $evLookup) {
+    if (-not $e._body -or $e.w -or $e.dl -or $e.ds) { continue }
+    $dt = Get-EvDates @($e.t, $e.d, (Get-Start $e._body 2500)) (ConvertTo-Date $e.at).ToOffset([TimeSpan]::FromHours(-3)).DateTime.Date
+    foreach ($k in 'w', 'we', 'ds', 'dl') { if ($dt[$k]) { $e[$k] = $dt[$k] } }
+    if ($e.w -or $e.dl -or $e.ds) { $e._dead = -not (Test-EvAlive $e (ConvertTo-Date $e.at) 21) }
+  }
+  Write-Host "  detalhes de $ok"
+}
+$evKept = @($evKept | Where-Object { -not $_._dead })
 
 # ---------- gravação ----------
 $evPrio = { param($e) if ($e.m) { 3 } elseif ($e.r -eq 'jp' -or $e.r -eq 'ce') { 2 } elseif ($e.r -eq 'ne') { 1 } else { 0 } }
 $evItems = @($evKept | Sort-Object @{ e = { & $evPrio $_ }; Descending = $true }, @{ e = { $_.fs }; Descending = $true } | Select-Object -First 160 | ForEach-Object {
   $o = [ordered]@{}
-  foreach ($k in 'id', 's', 'u', 'pub', 't', 'd', 'at', 'fs', 'k', 'r', 'pl', 'w', 'we', 'ds', 'dl', 'm') {
+  foreach ($k in 'id', 's', 'u', 'ru', 'pub', 't', 'd', 'at', 'fs', 'k', 'r', 'pl', 'w', 'we', 'ds', 'dl', 'm', 'x', 'dx') {
     $v = $_[$k]
     if ($null -eq $v -or ($v -is [string] -and $v -eq '')) { continue }
     $o[$k] = $v
@@ -342,6 +563,6 @@ $evData = [ordered]@{
   items = $evItems
 }
 New-Item -ItemType Directory -Force (Split-Path $evOut) | Out-Null
-[IO.File]::WriteAllText($evOut, (ConvertTo-Json $evData -Depth 5 -Compress), (New-Object Text.UTF8Encoding $false))
+[IO.File]::WriteAllText($evOut, (ConvertTo-Json $evData -Depth 8 -Compress), (New-Object Text.UTF8Encoding $false))
 $byRegion = ($evItems | Group-Object { $_.r } | ForEach-Object { "$($_.Name)=$($_.Count)" }) -join ' '
 Write-Host "Agenda gravada: $($evItems.Count) eventos ($byRegion), $(@($evItems | Where-Object { $_.m }).Count) de mestrado -> $evOut"

@@ -60,7 +60,6 @@ svg{display:block}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(var(--safe-t) + 10px) 16px 10px 18px;background:rgba(5,6,5,.82);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);border-bottom:1px solid transparent;transition:border-color .25s}
 .top.scrolled{border-bottom-color:var(--line)}
 .wm{font:400 30px/1 var(--serif);letter-spacing:-.01em;display:flex;align-items:baseline;user-select:none;-webkit-user-select:none}
-.wcat{display:block;width:36px;height:36px;margin:0 7px 0 -6px;align-self:center}
 .wm i{font-style:normal;color:var(--g);margin:0 1px}
 .wm b{font-weight:400;font-style:italic;color:var(--g)}
 .ringbtn{position:relative;display:flex;align-items:center;gap:9px;padding:4px 4px 4px 12px;border-radius:99px;background:var(--s2);border:1px solid var(--line)}
@@ -364,41 +363,15 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .rd-load .live{display:inline-block;margin-right:8px}
 
 /* aviso */
-.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 88px);z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100% - 32px);padding:12px 14px 12px 16px;border-radius:16px;background:#e9f2ec;color:#06140c;font-weight:600;font-size:14px;line-height:1.3;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.85,.2,1),opacity .3s}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 88px);z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px);padding:12px 14px 12px 16px;border-radius:16px;background:#e9f2ec;color:#06140c;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.85,.2,1),opacity .3s}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-.toast.withcat{gap:10px;padding:10px 14px 10px 10px;border-radius:18px 18px 18px 6px}
-.toast .tc{flex:none;width:42px;height:42px;margin:-8px 0 -8px -4px}
-.toast .tm{flex:1;min-width:0}
 .toast button{font:600 12px/1 var(--mono);color:#0a7a3d;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .confetti{position:fixed;inset:0;z-index:90;pointer-events:none;width:100%;height:100%}
 
-/* gatinhos da biblioteca */
-.cat{display:block;width:100%;height:auto;overflow:visible}
-.cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 5.5s infinite}
-.cat.c-lucia .eyes{animation-delay:-1.9s}
-.cat.c-peirce .eyes{animation-delay:-3.6s}
-.cat .tail{transform-box:fill-box;transform-origin:0% 100%;animation:wag 3.4s ease-in-out infinite}
-@keyframes blink{0%,94%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.12)}}
-@keyframes wag{0%,100%{transform:rotate(0)}50%{transform:rotate(-9deg)}}
-/* o gato sentado na prateleira, falando num balão */
-.scene{position:relative;margin:20px 16px 12px}
-.bubble{position:relative;margin-right:118px;padding:11px 14px 12px;border-radius:18px 18px 4px 18px;background:#e9f2ec;color:#0b1a11;font-size:14px;line-height:1.4;font-weight:500;text-wrap:pretty;box-shadow:0 10px 26px rgba(0,0,0,.35)}
-.bubble b{display:block;margin-bottom:4px;font:600 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#0a7a3d}
-.bubble em{font-style:normal;font-weight:700;color:#0a7a3d}
-.bubble::after{content:"";position:absolute;right:-9px;bottom:8px;border-style:solid;border-width:7px 0 7px 10px;border-color:transparent transparent transparent #e9f2ec}
-.bubble .bl{display:inline-block;margin-top:8px;font:600 11px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:#0a7a3d;text-decoration:underline;text-underline-offset:3px}
-.shelfrow{position:relative;height:60px;margin-top:12px}
-.shelfrow::after{content:"";position:absolute;left:-16px;right:-16px;bottom:-9px;height:9px;border-radius:2px;background:linear-gradient(180deg,#2c3c33,#121a16);border-top:1px solid rgba(169,255,208,.16);box-shadow:0 10px 18px rgba(0,0,0,.55)}
-.shelfrow .books{position:absolute;left:0;bottom:0;width:calc(100% - 112px);height:60px}
-.shelfrow .cat{position:absolute;right:0;bottom:-1px;width:110px;z-index:1}
-.scene.quiet{margin-top:40px}
-.scene.quiet .shelfrow{height:44px;margin-top:0}
-.scene.quiet .books{height:44px;width:calc(100% - 92px)}
-.scene.quiet .cat{width:86px}
-.empty .cat,.endnote .cat{width:104px;margin:-6px auto 8px}
-
 /* eventos */
 .vh + .vsub{margin-bottom:2px}
+.evupd{flex-wrap:wrap;padding:12px 18px 0;line-height:1.5}
+.evupd b{color:var(--g);font-weight:600}
 .mest{margin:18px 16px 0;padding:18px 18px 14px;border-radius:24px;background:linear-gradient(150deg,#13281c 0%,var(--s1) 65%);border:1px solid rgba(61,242,140,.25)}
 .mest h3{font:400 27px/1.05 var(--serif);margin:10px 0 6px;letter-spacing:-.01em}
 .mest h3 em{font-style:italic;color:var(--g)}
@@ -434,7 +407,14 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .evf{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:9px;font:500 10.5px/1.3 var(--mono);color:var(--faint)}
 /* carimbo de "devolver até" da biblioteca, aqui para prazos */
 .stamp{display:inline-block;padding:4px 7px;border:1.5px solid currentColor;border-radius:5px;color:var(--mid);font:600 9.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;transform:rotate(-3deg)}
+.evv{color:var(--g);font-weight:600}
 .evdet{padding-top:54px}
+.evh{font:400 23px/1.1 var(--serif);margin:22px 0 10px}
+.evreq{list-style:none;display:grid;gap:8px}
+.evreq li{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:14px;background:var(--s2);border:1px solid var(--line);font-size:14.5px;line-height:1.35}
+.evreq li svg{flex:none;margin-top:3px;color:var(--g)}
+.evabout{font-size:15.5px;line-height:1.6;color:rgba(237,242,238,.84)}
+.evnote{margin-top:16px;padding:12px 14px;border-radius:14px;border:1px dashed var(--line2);color:var(--muted);font-size:13.5px;line-height:1.45}
 .evdet .ttl{font-size:31px;margin:10px 0 16px}
 .evrows{margin:0 0 16px;padding:2px 14px;border-radius:18px;background:var(--s2);border:1px solid var(--line)}
 .evrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
@@ -444,12 +424,6 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 .subacts.three{grid-template-columns:repeat(3,1fr)}
 .tabs .badge.pin{animation:pinpulse 2.2s infinite}
 @keyframes pinpulse{0%{box-shadow:0 0 0 0 rgba(61,242,140,.6)}70%{box-shadow:0 0 0 8px rgba(61,242,140,0)}100%{box-shadow:0 0 0 0 rgba(61,242,140,0)}}
-/* a equipe, na aba Você */
-.crew > div{display:grid;grid-template-columns:58px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
-.crew > div:last-child{border-bottom:0;padding-bottom:2px}
-.crew b{display:block;font:400 23px/1 var(--serif);margin-bottom:4px}
-.crew span{display:block;font:500 10.5px/1.45 var(--mono);color:var(--muted)}
-.crew small{display:block;margin-top:3px;font-size:12px;color:var(--faint);line-height:1.35}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (min-width:700px){.dcard{flex-basis:300px}}
@@ -460,7 +434,7 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 <div class="grain"></div>
 
 <header class="top" id="top">
-  <div class="wm" aria-label="Atualiz.IA"><span class="wcat" id="wcat"></span>Atualiz<i>.</i><b>IA</b></div>
+  <div class="wm" aria-label="Atualiz.IA">Atualiz<i>.</i><b>IA</b></div>
   <button class="ringbtn" id="ringbtn" data-act="tab" data-tab="me" aria-label="Meta do dia"></button>
 </header>
 
@@ -475,11 +449,11 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
 </main>
 
 <nav class="tabs" id="tabs">
-  <button data-act="tab" data-tab="feed" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg>Feed</button>
+  <button data-act="tab" data-tab="feed" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="4" width="16" height="7" rx="2"/><path d="M4 15h16M4 19.5h10"/></svg>Feed</button>
   <button data-act="tab" data-tab="explore"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>Explorar</button>
-  <button data-act="tab" data-tab="events"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 6.5L7.4 3l2.8 3.5M17.8 6.5L16.6 3l-2.8 3.5"/><rect x="3.5" y="6.5" width="17" height="14" rx="3"/><path d="M3.5 11h17"/><path d="M8 15.5h.01M12 15.5h.01M16 15.5h.01" stroke-width="2.6"/></svg>Eventos<span class="badge pin" id="evBadge" hidden></span></button>
-  <button data-act="tab" data-tab="saved"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="4" height="14" rx="1"/><rect x="9.5" y="3.5" width="4" height="15.5" rx="1"/><path d="M15.3 6.4l3.5-.9 3 12.2-3.5.9z"/><path d="M2.5 21h19"/></svg>Estante<span class="badge" id="savedBadge" hidden></span></button>
-  <button data-act="tab" data-tab="me"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 10.2L5 3.8l4.4 3.1a8.6 8.6 0 0 1 5.2 0L19 3.8l-.6 6.4A7.4 7.4 0 0 1 20 15c0 3.3-3.6 5.6-8 5.6S4 18.3 4 15a7.4 7.4 0 0 1 1.6-4.8z"/><circle cx="9.2" cy="13.6" r="2"/><circle cx="14.8" cy="13.6" r="2"/><path d="M11.2 13.4h1.6"/></svg>Você</button>
+  <button data-act="tab" data-tab="events"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14.5h.01M12 14.5h.01M16 14.5h.01" stroke-width="2.6"/></svg>Eventos<span class="badge pin" id="evBadge" hidden></span></button>
+  <button data-act="tab" data-tab="saved"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6.5 4h11a1 1 0 0 1 1 1v15l-6.5-4-6.5 4V5a1 1 0 0 1 1-1z"/></svg>Estante<span class="badge" id="savedBadge" hidden></span></button>
+  <button data-act="tab" data-tab="me"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 8 8"/><circle cx="12" cy="12" r="2.5"/></svg>Você</button>
 </nav>
 
 <div class="sheet" id="sheet" hidden>
@@ -510,7 +484,7 @@ main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding-bottom:ca
   <div class="rate-card" id="rateCard"></div>
 </div>
 
-<div class="toast" id="toast"><span class="tc"></span><span class="tm"></span><button></button></div>
+<div class="toast" id="toast"><span></span><button></button></div>
 
 <script>
 'use strict';
@@ -887,86 +861,6 @@ function saveBtn(it) {
 function readFlag(it) { return S.read[it.id] ? `<span class="readmark">${ICON.check} lida</span>` : ''; }
 function whyHtml(it) { return it._why && feedMode === 'foryou' ? `<div class="why">${esc(it._why)}</div>` : ''; }
 
-// ---------- gatinhos ----------
-// A equipe da biblioteca: três gatos de óculos, cada um cuida de uma parte do app (nomes de semioticistas).
-const CATS = {
-  umberto: { name: 'Umberto', role: 'bibliotecário, cuida da estante', nod: 'Homenagem a Umberto Eco, que escreveu O Nome da Rosa, aquele da biblioteca labirinto.', fur: '#29332d', line: '#5b6b62', chest: '#36423b', eye: '#3df28c', pupil: '#05130b', ink: '#bccdc3', whisk: '#bccdc3', frame: '#3df28c', glasses: 'round' },
-  lucia: { name: 'Lúcia', role: 'cuida da agenda de eventos', nod: 'Homenagem a Lúcia Santaella, a grande semioticista brasileira.', fur: '#a6b1ab', line: '#58625d', chest: '#f1f4f2', eye: '#141a16', ink: '#2c322f', whisk: '#ffffff', frame: '#e9dc8a', glasses: 'cateye' },
-  peirce: { name: 'Peirce', role: 'acompanha sua meta de leitura', nod: 'Homenagem a Charles S. Peirce, um dos fundadores da semiótica.', fur: '#eba65f', line: '#8d5626', chest: '#f9e2c0', eye: '#1b140e', ink: '#5b3612', whisk: '#fff4e2', frame: '#141a16', glasses: 'square', stripe: '#c97c36' }
-};
-function catEyes(c, mood) {
-  const arc = (x, up) => `<path d="M${x - 5} ${up ? 47.5 : 45.5}q5 ${up ? -6 : 4.5} 10 0" fill="none" stroke="${c.ink}" stroke-width="2.4" stroke-linecap="round"/>`;
-  if (mood === 'happy') return arc(47, 1) + arc(73, 1);
-  if (mood === 'sleep') return arc(47, 0) + arc(73, 0);
-  const r = mood === 'wow' ? 6.3 : 5.3;
-  const one = x => `<circle cx="${x}" cy="46" r="${r}" fill="${c.eye}"/>${c.pupil ? `<ellipse cx="${x}" cy="46" rx="1.9" ry="${r - 1.3}" fill="${c.pupil}"/>` : ''}<circle cx="${x + 1.9}" cy="44" r="1.8" fill="#fff"/>${mood === 'wow' ? `<circle cx="${x - 2.2}" cy="48.4" r=".9" fill="#fff"/>` : ''}`;
-  return `<g class="eyes">${one(47)}${one(73)}</g>`;
-}
-function catGlasses(c) {
-  const f = c.frame, a = `fill="rgba(225,255,238,.12)" stroke="${f}" stroke-width="2.6"`, arms = `fill="none" stroke="${f}" stroke-width="2.6" stroke-linecap="round"`;
-  if (c.glasses === 'square') return `<rect x="36" y="37" width="22" height="18" rx="4.5" ${a}/><rect x="62" y="37" width="22" height="18" rx="4.5" ${a}/><path d="M58 45h4M36 42.5l-7-2.5M84 42.5l7-2.5" ${arms}/>`;
-  if (c.glasses === 'cateye') return `<path d="M35 39.5Q47 35 58 40Q58 54 47 54Q36 54 35 39.5Z" ${a}/><path d="M85 39.5Q73 35 62 40Q62 54 73 54Q84 54 85 39.5Z" ${a}/><path d="M58 43q2-2 4 0M35 39.5l-4.5-4.5M85 39.5l4.5-4.5" ${arms}/>`;
-  return `<circle cx="47" cy="46" r="10.5" ${a}/><circle cx="73" cy="46" r="10.5" ${a}/><path d="M57.5 45q2.5-2.5 5 0M36.5 44l-7-3M83.5 44l7-3" ${arms}/>`;
-}
-// full = sentado de corpo inteiro (na prateleira); senão, só o rostinho (avisos, listas)
-function cat(who, mood = 'idle', full = false) {
-  const c = CATS[who] || CATS.umberto, L = c.line, st = `stroke="${L}" stroke-width="2.2" stroke-linejoin="round"`;
-  let s = '';
-  if (full) {
-    const tail = 'M95 92C114 90 117 66 105 59';
-    s += `<g class="tail"><path d="${tail}" fill="none" stroke="${L}" stroke-width="11.5" stroke-linecap="round"/><path d="${tail}" fill="none" stroke="${c.fur}" stroke-width="7" stroke-linecap="round"/></g>`;
-    s += `<ellipse cx="60" cy="84" rx="40" ry="18" fill="${c.fur}" ${st}/><ellipse cx="60" cy="82" rx="17" ry="11" fill="${c.chest}"/>`;
-    const py = who === 'peirce' ? 88 : 99;
-    // o Peirce lê um livro aberto
-    if (who === 'peirce') s += `<path d="M60 88C54 84.5 45 84.5 39 87.5V100C45 97 54 97 60 100.5C66 97 75 97 81 100V87.5C75 84.5 66 84.5 60 88Z" fill="#edf2ee" ${st}/><path d="M60 88v12.5M44 92h10M44 95.5h9M66 92h10M66 95.5h9" stroke="${L}" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>`;
-    s += `<ellipse cx="45" cy="${py}" rx="8.5" ry="5" fill="${c.chest}" ${st}/><ellipse cx="75" cy="${py}" rx="8.5" ry="5" fill="${c.chest}" ${st}/>`;
-  } else {
-    s += `<path d="M22 104Q22 72 60 72Q98 72 98 104Z" fill="${c.fur}" ${st}/><ellipse cx="60" cy="88" rx="14" ry="11" fill="${c.chest}"/>`;
-  }
-  s += `<path d="M30 40L33 10L54 25Z" fill="${c.fur}" ${st}/><path d="M90 40L87 10L66 25Z" fill="${c.fur}" ${st}/>`;
-  s += `<path d="M35.5 32L37 17.5L47.5 25.5Z" fill="#f29bb0" opacity=".55"/><path d="M84.5 32L83 17.5L72.5 25.5Z" fill="#f29bb0" opacity=".55"/>`;
-  s += `<ellipse cx="60" cy="46" rx="32" ry="27" fill="${c.fur}" ${st}/>`;
-  if (c.stripe) s += `<path d="M60 21v7M52.5 22.5l1.8 5.8M67.5 22.5l-1.8 5.8M28.5 43.5h6M28.5 49h5M91.5 43.5h-6M91.5 49h-5" stroke="${c.stripe}" stroke-width="2.4" stroke-linecap="round"/>`;
-  s += `<ellipse cx="60" cy="60" rx="11" ry="7.5" fill="${c.chest}" opacity=".85"/>`;
-  s += `<ellipse cx="36" cy="58" rx="5" ry="3" fill="#ff8fab" opacity=".35"/><ellipse cx="84" cy="58" rx="5" ry="3" fill="#ff8fab" opacity=".35"/>`;
-  s += catEyes(c, mood) + catGlasses(c);
-  s += `<path d="M56.6 55.6h6.8l-3.4 3.6z" fill="#f29bb0" stroke="#f29bb0" stroke-width="1.2" stroke-linejoin="round"/>`;
-  s += mood === 'happy' || mood === 'wow'
-    ? `<path d="M55 61.5q5 6.5 10 0z" fill="#e0607e" stroke="${c.ink}" stroke-width="1.5" stroke-linejoin="round"/>`
-    : `<path d="M54 61q3 3 6 0q3 3 6 0" fill="none" stroke="${c.ink}" stroke-width="1.7" stroke-linecap="round"/>`;
-  s += `<path d="M30 56.5L14 53.5M30 60.5L15 62.5M90 56.5L106 53.5M90 60.5L105 62.5" stroke="${c.whisk}" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>`;
-  if (who === 'umberto') s += `<path d="M60 75.5l-9.5-5v10zM60 75.5l9.5-5v10z" fill="#3df28c" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="60" cy="75.5" r="2.6" fill="#1fae5e" stroke="${L}" stroke-width="1.4"/>`;
-  if (who === 'lucia') s += `<g transform="rotate(-24 40 21)"><path d="M40 21l-7.5-4.5v9zM40 21l7.5-4.5v9z" fill="#ff8fab" stroke="${L}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="40" cy="21" r="2.1" fill="#e0607e"/></g>`;
-  return `<svg class="cat c-${who}" viewBox="${full ? '0 0 120 106' : '12 4 96 96'}" aria-hidden="true">${s}</svg>`;
-}
-// lombadas de livro sorteadas (sempre as mesmas para a mesma semente)
-function books(seed) {
-  let r = seed % 233280 || 7;
-  const rnd = () => (r = (r * 9301 + 49297) % 233280) / 233280;
-  const cols = ['#173d28', '#10291b', '#1f4d33', '#25342c', '#121a15', '#2d5a3f', '#1a2e23'];
-  let x = 2, out = '';
-  while (x < 476) {
-    const w = 8 + Math.round(rnd() * 8), h = 30 + Math.round(rnd() * 27), q = rnd();
-    const col = q > .93 ? '#3df28c' : q > .88 ? '#e9dc8a' : q > .84 ? '#a9ffd0' : cols[Math.floor(rnd() * cols.length)];
-    const band = q > .84 ? 'rgba(0,0,0,.22)' : 'rgba(255,255,255,.09)';
-    if (rnd() > .94 && x < 440) {
-      out += `<rect x="${x + 2}" y="${60 - h}" width="${w}" height="${h}" rx="1.5" fill="${col}" transform="rotate(13 ${x + 2 + w} 60)"/>`;
-      x += w + 9; continue;
-    }
-    out += `<rect x="${x}" y="${60 - h}" width="${w}" height="${h}" rx="1.5" fill="${col}"/><rect x="${x}" y="${65 - h}" width="${w}" height="1.6" fill="${band}"/><rect x="${x}" y="53" width="${w}" height="1.6" fill="${band}"/>`;
-    x += w + 1.5;
-  }
-  return `<svg class="books" viewBox="0 0 480 60" preserveAspectRatio="xMinYMax slice" aria-hidden="true">${out}</svg>`;
-}
-// gato sentado na prateleira falando num balão (só para evento do seu interesse); text já vem em HTML seguro
-function scene(who, text, mood = 'idle', extra = '', id = '') {
-  return `<div class="scene"${id ? ` id="${id}"` : ''}><div class="bubble"><b>${CATS[who].name}</b>${text}${extra}</div><div class="shelfrow">${books(hash(who + dayKey()))}${cat(who, mood, true)}</div></div>`;
-}
-// a mesma prateleira, com o gato quieto
-function shelfCat(who, mood = 'idle') {
-  return `<div class="scene quiet"><div class="shelfrow">${books(hash(who + dayKey()))}${cat(who, mood, true)}</div></div>`;
-}
-
 function cardHtml(it, kind) {
   const read = S.read[it.id] ? ' is-read' : '';
   const t = esc(title(it)), d = esc(summary(it));
@@ -1025,7 +919,6 @@ function renderFeedView() {
   v.innerHTML = `
     <div class="hello"><div class="kick">${esc(dt)}</div><h1>${helloText()}</h1>
       <div class="upd"><span class="live"></span>atualizado ${since(Date.parse(FEED.updated))} · ${ITEMS.length} matérias · ${Object.keys(SRC).length} fontes</div></div>
-    ${helloScene()}
     <div class="sec-h"><h2>Suas <em>${g}</em> de hoje</h2><span class="aux" id="dailyAux"></span></div>
     <div class="dscroll" id="daily"></div>
     <div class="feedhead"><h2>Feed</h2><div class="seg"><button class="${feedMode === 'foryou' ? 'on' : ''}" data-act="fmode" data-mode="foryou">Para você</button><button class="${feedMode === 'recent' ? 'on' : ''}" data-act="fmode" data-mode="recent">Recentes</button></div></div>
@@ -1059,8 +952,8 @@ function renderFeed(reset) {
   feedShown += next.length;
   if (feedShown >= feedList.length) {
     box.insertAdjacentHTML('beforeend', feedList.length
-      ? `<div class="endnote">${cat('peirce', 'sleep', true)}<b>Você chegou ao fim.</b>O Atualiz.IA busca novidades sozinho a cada 2 horas.</div>`
-      : `<div class="endnote">${cat('peirce', 'happy', true)}<b>Tudo lido por aqui.</b>${feedTag ? 'Tente outro tema ou veja os recentes.' : 'Volte daqui a pouco: chegam matérias novas a cada 2 horas.'}</div>`);
+      ? `<div class="endnote"><b>Você chegou ao fim.</b>O Atualiz.IA busca novidades sozinho a cada 2 horas.</div>`
+      : `<div class="endnote"><b>Tudo lido por aqui.</b>${feedTag ? 'Tente outro tema ou veja os recentes.' : 'Volte daqui a pouco: chegam matérias novas a cada 2 horas.'}</div>`);
   }
 }
 const moreObs = new IntersectionObserver(es => {
@@ -1130,7 +1023,6 @@ function renderSaved() {
   const agenda = Object.keys(S.ev.saved).map(evGet).filter(Boolean).sort((a, b) => evSortKey(a) - evSortKey(b));
   const list = shelf === 'saved' ? saved : reads.filter(Boolean);
   const nRead = reads.filter(Boolean).length;
-  const decor = shelfCat(shelf === 'agenda' ? 'lucia' : shelf === 'saved' ? 'umberto' : 'peirce');
   let body;
   if (shelf === 'agenda') {
     body = agenda.length ? agenda.map(e => evCard(e, false)).join('') : `<div class="empty"><b>Agenda vazia.</b>Na aba Eventos, toque no marcador de um evento para guardar aqui.</div>`;
@@ -1148,7 +1040,7 @@ function renderSaved() {
     }).join('')}</div>`;
   }
   v.innerHTML = `<h1 class="vh">Sua <em>estante</em></h1>
-    <div style="padding:16px 18px 0"><div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Salvas · ${saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidas · ${nRead}</button><button class="${shelf === 'agenda' ? 'on' : ''}" data-act="shelf" data-v="agenda">Agenda · ${agenda.length}</button></div></div>${decor}<div style="height:10px"></div>${body}`;
+    <div style="padding:16px 18px 6px"><div class="seg"><button class="${shelf === 'saved' ? 'on' : ''}" data-act="shelf" data-v="saved">Salvas · ${saved.length}</button><button class="${shelf === 'read' ? 'on' : ''}" data-act="shelf" data-v="read">Lidas · ${nRead}</button><button class="${shelf === 'agenda' ? 'on' : ''}" data-act="shelf" data-v="agenda">Agenda · ${agenda.length}</button></div></div>${shelf === 'agenda' && agenda.length ? '<div style="height:10px"></div>' : ''}${body}`;
 }
 
 function renderMe() {
@@ -1191,8 +1083,6 @@ function renderMe() {
       <div class="set"><div><b>Priorizar português</b><span>matérias do Brasil sobem no feed</span></div><button class="tgl${S.set.pt ? ' on' : ''}" data-act="set" data-k="pt" aria-label="Priorizar português"></button></div>
       <div class="set"><div><b>Mostrar traduzido</b><span>títulos e resumos de fora em português</span></div><button class="tgl${S.set.trans ? ' on' : ''}" data-act="set" data-k="trans" aria-label="Mostrar traduzido"></button></div>
     </div>
-    <div class="panel"><h3>A equipe da biblioteca</h3><p class="h">Três gatinhos de óculos cuidam do app. Os nomes são de semioticistas.</p>
-      <div class="crew">${Object.keys(CATS).map(k => `<div>${cat(k)}<div><b>${CATS[k].name}</b><span>${CATS[k].role}</span><small>${CATS[k].nod}</small></div></div>`).join('')}</div></div>
     <div class="panel"><h3>Seus dados</h3><p class="h">Ficam só neste aparelho. Faça um backup de vez em quando.</p>
       <div class="btns"><button class="btn sm" data-act="export">Exportar backup</button><button class="btn sm" data-act="import">Importar</button><button class="btn sm warn" data-act="resetlearn">Zerar aprendizado</button></div></div>
     <p class="about">${FEED ? `${Object.keys(SRC).length} fontes · ${ITEMS.length} matérias · última coleta ${since(Date.parse(FEED.updated))}<br>` : ''}O feed e a agenda se atualizam sozinhos a cada 2 horas.<br>Atualiz.IA · feito para o seu dia a dia</p>`;
@@ -1214,16 +1104,7 @@ function helloText() {
   const left = S.set.goal - today();
   return left > 0 ? `${greet()}.<br>Faltam <em>${left} ${left === 1 ? 'leitura' : 'leituras'}</em> pra meta de hoje.` : `${greet()}.<br>Meta batida. <em>Agora é bônus.</em>`;
 }
-function refreshHello() {
-  const h1 = $('#v-feed .hello h1'); if (h1 && FEED) h1.innerHTML = helloText();
-  const sc = $('#helloScene'); if (sc) sc.outerHTML = helloScene();
-}
-// a Lúcia só aparece no topo do feed quando chegou evento do seu interesse (João Pessoa, Ceará ou mestrado)
-function helloScene() {
-  const np = EVD ? evNewPrio() : [];
-  if (!np.length) return '<div id="helloScene"></div>';
-  return scene('lucia', `Psiu! ${np.length === 1 ? 'Chegou <em>um evento</em>' : `Chegaram <em>${np.length} eventos</em>`} ${esc(placesOf(np))}.`, 'wow', '<br><button class="bl" data-act="tab" data-tab="events">Ver a agenda</button>', 'helloScene');
-}
+function refreshHello() { const h1 = $('#v-feed .hello h1'); if (h1 && FEED) h1.innerHTML = helloText(); }
 function since(t) { const a = ago(t); return a === 'agora' ? 'agora mesmo' : a === 'ontem' ? 'ontem' : /\d (jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/.test(a) ? 'em ' + a : 'há ' + a; }
 
 // ---------- eventos ----------
@@ -1303,7 +1184,7 @@ function updEvBadge() {
   const n = cur === 'events' ? 0 : evNewPrio().length;
   b.hidden = !n; b.textContent = n > 9 ? '9+' : n;
 }
-// a Lúcia avisa uma vez por leva de novidades
+// aviso de novidade: uma vez por leva
 function pingEvents() {
   if (cur === 'events') return;
   const list = evNewPrio(); if (!list.length) return;
@@ -1311,7 +1192,7 @@ function pingEvents() {
   if (newest <= (S.ev.ping || 0)) return;
   S.ev.ping = newest; save();
   const msg = list.some(e => e.m) ? 'Psiu! Saiu edital de mestrado na UFPB.' : `Psiu! ${list.length === 1 ? 'Tem uma novidade' : `Tem ${list.length} novidades`} ${placesOf(list)}.`;
-  const show = () => toast(msg, 'Ver', () => go('events'), 'lucia', 'wow');
+  const show = () => toast(msg, 'Ver', () => go('events'));
   if ($('#toast').classList.contains('show')) setTimeout(show, 2600); else show();
 }
 
@@ -1332,10 +1213,12 @@ function evBlock(e) {
 function evCard(e, isNew) {
   const hot = evPrio(e) >= 2, mn = evMain(e);
   const stamp = mn && !mn.lab && evOpen(e.dl) ? `<span class="stamp">prazo ${fmtShort(e.dl)}</span>` : '';
+  const x = e.x || {};
+  const money = x.val ? `<span class="evv">${esc(x.val.replace(/\s*\(.*$/, ''))}</span>` : x.pz ? `<span class="evv">prêmio ${esc(x.pz)}</span>` : '';
   return `<article class="evc${hot ? ' prio' : ''}" data-ev="${e.id}">${evBlock(e)}<div class="evb">
       <div class="evm">${isNew ? `<span class="evnew">${ICON.tack}novo</span>` : ''}<span class="evk">${KIND[e.k] || 'Evento'}</span><span class="evp${hot ? ' hot' : ''}">${ICON.pin}${esc(evPlace(e))}</span>${e.m ? '<span class="evp hot">mestrado</span>' : ''}</div>
       <h3 class="evt">${esc(e.t)}</h3>${e.d ? `<p class="evs">${esc(e.d)}</p>` : ''}
-      <div class="evf">${stamp}<span>${esc(evSrcName(e))} · ${ago(e.pd)}</span></div></div>
+      <div class="evf">${stamp}${money}<span>${esc(evSrcName(e))} · ${ago(e.pd)}</span></div></div>
     <button class="icobtn bm${S.ev.saved[e.id] ? ' on' : ''}" data-act="evsave" data-id="${e.id}" aria-label="Guardar na agenda">${ICON.bm}</button></article>`;
 }
 function mestCard(all) {
@@ -1351,7 +1234,7 @@ function mestCard(all) {
 function renderEvents() {
   const v = $('#v-events');
   const head = `<h1 class="vh">Eventos</h1><p class="vsub">Congressos, chamadas, editais e palestras da área. João Pessoa e Ceará primeiro.</p>`;
-  if (!EVD) { v.innerHTML = head + shelfCat('lucia') + '<div class="skel" style="height:120px"></div>'.repeat(3); return; }
+  if (!EVD) { v.innerHTML = head + '<div class="skel" style="height:120px;margin-top:16px"></div>'.repeat(3); return; }
   const all = EVS.filter(evVisible);
   const isNew = e => e.fsd > evSeenAt;
   const inReg = (e, k) => k === 'all' || (k === 'prio' ? evPrio(e) >= 2 : e.r === k);
@@ -1362,11 +1245,9 @@ function renderEvents() {
   const list = inR.filter(e => !evKind || e.k === evKind);
   const dated = list.filter(e => evMain(e)).sort((a, b) => evSortKey(a) - evSortKey(b));
   const undated = list.filter(e => !evMain(e)).sort((a, b) => b.pd - a.pd);
-  // a Lúcia só fala quando chegou novidade do seu interesse; senão fica quieta na prateleira
+  // linha de status no estilo do feed; as novidades do seu interesse ganham destaque
   const fresh = all.filter(e => isNew(e) && evPrio(e) >= 2);
-  const top = fresh.length
-    ? scene('lucia', `Achei <em>${fresh.length} ${fresh.length === 1 ? 'novidade' : 'novidades'}</em> ${esc(placesOf(fresh))} desde a sua última visita. Marquei com um alfinete.`, 'wow')
-    : shelfCat('lucia');
+  const top = `<div class="upd evupd"><span class="live"></span>${fresh.length ? `<b>${fresh.length} ${fresh.length === 1 ? 'novidade' : 'novidades'} ${esc(placesOf(fresh))}</b> · ` : ''}agenda atualizada ${since(Date.parse(EVD.updated))} · ${all.length} eventos</div>`;
   const regChips = REG_CHIPS.filter(([k]) => regN[k] || k === 'prio' || k === 'all').map(([k, l]) => `<button class="chip${evReg === k ? ' on' : ''}" data-act="evreg" data-k="${k}">${l}<small>${regN[k]}</small></button>`).join('');
   const kindChips = [`<button class="chip${!evKind ? ' on' : ''}" data-act="evkind" data-k="">Todos os tipos</button>`]
     .concat(KIND_ORDER.filter(k => kindN[k]).map(k => `<button class="chip${evKind === k ? ' on' : ''}" data-act="evkind" data-k="${k}">${KIND_PL[k]}<small>${kindN[k]}</small></button>`)).join('');
@@ -1395,27 +1276,43 @@ function openEvent(id) {
   requestAnimationFrame(() => requestAnimationFrame(() => sh.classList.add('open')));
   $('#sheetScroll').scrollTop = 0;
 }
+// detalhe do evento: as datas e o que o coletor leu do texto da notícia (valor, vagas, o que pede, links)
 function renderEvDetail(e) {
-  const rows = [], win = evWindow(e) && (e.ds || e.dl);
+  const x = e.x || {}, rows = [], win = evWindow(e) && (e.ds || e.dl);
+  if (e.dl || e.ds) rows.push([e.w && !evWindow(e) ? 'Prazo' : 'Inscrições', (e.ds && e.dl ? fmtRange(e.ds, e.dl) : e.dl ? `até ${fmtD(e.dl)}` : `a partir de ${fmtD(e.ds)}`) + (e.dl && !evOpen(e.dl) ? ' · encerrado' : '')]);
   // em edital e chamada, a outra data da notícia costuma ser resultado ou aula: fica de fora para não confundir
   if (e.w && !win) rows.push([evWindow(e) ? 'Data' : 'Quando', fmtRange(e.w, e.we)]);
-  if (e.dl || e.ds) rows.push([e.w && !evWindow(e) ? 'Prazo' : 'Inscrições', e.ds && e.dl ? fmtRange(e.ds, e.dl) : e.dl ? `até ${fmtD(e.dl)}` : `a partir de ${fmtD(e.ds)}`]);
   if (!e.w && !e.dl && !e.ds) rows.push(['Quando', 'a notícia não diz (s.d.)']);
+  if (x.val) rows.push(['Valor', x.val]);
+  if (x.pz) rows.push(['Prêmio', x.pz]);
+  if (x.vag) rows.push(['Vagas', String(x.vag)]);
+  if (x.how) rows.push(['Inscrição', x.how]);
   rows.push(['Onde', evPlace(e) + (evPrio(e) >= 2 ? ' · prioridade' : '')]);
+  if (x.loc) rows.push(['Local', x.loc]);
+  if (x.fmt) rows.push(['Formato', x.fmt]);
   rows.push(['Tipo', (KIND[e.k] || 'Evento') + (e.m ? ' de mestrado' : '')]);
   const hasDay = (win ? [e.ds, e.dl] : [e.w, e.dl]).some(s => s && s.length === 10);
+  const page = e.ru || e.u, links = x.lk || [];
+  const req = (x.req || []).length ? `<h3 class="evh">O que pede</h3><ul class="evreq">${x.req.map(r => `<li>${ICON.check}<span>${esc(r)}</span></li>`).join('')}</ul>` : '';
+  const about = x.ex || e.d;
+  // o link de inscrição (ou o edital) vira o botão principal; a notícia fica logo abaixo
+  const btns = links.map((l, i) => `<a class="btn${i === 0 ? ' pri' : ''}" href="${esc(l.u)}" target="_blank" rel="noopener">${ICON.ext} ${esc(l.t)}</a>`).join('')
+    + `<a class="btn${links.length ? '' : ' pri'}" href="${esc(page)}" target="_blank" rel="noopener">${ICON.ext} Ler a notícia</a>`
+    + (hasDay ? `<button class="btn" data-act="evcal" data-id="${e.id}">${ICON.cal} Pôr no calendário</button>` : '');
   $('#sheetScroll').innerHTML = `<div class="dbody evdet">
       <div class="kick">${esc(evSrcName(e))} · publicado ${since(e.pd)}</div>
       <h2 class="ttl">${esc(e.t)}</h2>
       <div class="evrows">${rows.map(([a, b]) => `<div class="evrow"><span>${a}</span><b>${esc(b)}</b></div>`).join('')}</div>
-      ${e.d ? `<p class="dsum">${esc(e.d)}</p>` : ''}
-      <div class="actions"><a class="btn pri" href="${esc(e.u)}" target="_blank" rel="noopener">${ICON.ext} Abrir a página</a>${hasDay ? `<button class="btn" data-act="evcal" data-id="${e.id}">${ICON.cal} Pôr no calendário</button>` : ''}</div>
+      ${req}
+      ${about ? `<h3 class="evh">Sobre</h3><p class="evabout">${esc(about)}</p>` : ''}
+      ${e.x ? '' : `<p class="evnote">A notícia não traz os detalhes da inscrição (valor, o que pede). Abra a página para conferir.</p>`}
+      <div class="actions">${btns}</div>
       <div class="subacts three">
         <button class="bm${S.ev.saved[e.id] ? ' on' : ''}" data-act="evsave" data-id="${e.id}">${ICON.bm}${S.ev.saved[e.id] ? 'Na agenda' : 'Guardar'}</button>
         <button data-act="evshare" data-id="${e.id}">${ICON.share}Enviar</button>
         <button data-act="evhide" data-id="${e.id}">${ICON.less}Não me interessa</button>
       </div>
-      <p class="srcline">As datas são lidas automaticamente da notícia. Confira na página antes de se inscrever.</p>
+      <p class="srcline">Datas, valores e requisitos são lidos automaticamente da notícia. Confira no edital ou na página antes de se inscrever.</p>
     </div>`;
 }
 function evToggleSave(id) {
@@ -1423,7 +1320,7 @@ function evToggleSave(id) {
   if (S.ev.saved[id]) { delete S.ev.saved[id]; toast('Tirado da agenda.'); }
   else {
     const o = {};
-    ['id', 's', 'u', 'pub', 't', 'd', 'at', 'fs', 'k', 'r', 'pl', 'w', 'we', 'ds', 'dl', 'm'].forEach(k => { if (e[k] != null) o[k] = e[k]; });
+    ['id', 's', 'u', 'ru', 'pub', 't', 'd', 'at', 'fs', 'k', 'r', 'pl', 'w', 'we', 'ds', 'dl', 'm', 'x'].forEach(k => { if (e[k] != null) o[k] = e[k]; });
     S.ev.saved[id] = Object.assign(o, { sv: Date.now() });
     toast('Guardado na agenda.', 'Ver', () => { closeDetail(); shelf = 'agenda'; if (cur === 'saved') renderSaved(); else go('saved'); });
   }
@@ -1437,7 +1334,8 @@ function evCalendar(e) {
   const day = (s, add = 0) => { const [y, m, d] = ymd(s), x = new Date(y, m - 1, d + add); return `${x.getFullYear()}${pad(x.getMonth() + 1)}${pad(x.getDate())}`; };
   const ics = s => String(s || '').replace(/[\\;,]/g, c => '\\' + c).replace(/\n/g, '\\n');
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
-  const one = (uid, a, b, sum) => ['BEGIN:VEVENT', `UID:${uid}@atualizia`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day(a)}`, `DTEND;VALUE=DATE:${day(b || a, 1)}`, `SUMMARY:${ics(sum)}`, `DESCRIPTION:${ics(e.u)}`, `URL:${e.u}`, 'END:VEVENT'];
+  const link = e.ru || e.u;
+  const one = (uid, a, b, sum) => ['BEGIN:VEVENT', `UID:${uid}@atualizia`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day(a)}`, `DTEND;VALUE=DATE:${day(b || a, 1)}`, `SUMMARY:${ics(sum)}`, `DESCRIPTION:${ics(link)}`, `URL:${link}`, 'END:VEVENT'];
   const evs = [], full = s => s && s.length === 10;
   if (evWindow(e) && (e.ds || e.dl)) {
     if (full(e.ds) && full(e.dl)) evs.push(...one(e.id, e.ds, e.dl, 'Inscrições: ' + e.t));
@@ -1685,12 +1583,9 @@ $('#rdScroll').addEventListener('scroll', () => {
 
 // ---------- avisos e festa ----------
 let toastT;
-// aviso simples; o gatinho só aparece falando quando chega evento do seu interesse
-function toast(msg, label, fn, who, mood = 'idle') {
-  const t = $('#toast'), tc = t.querySelector('.tc');
-  t.classList.toggle('withcat', !!who);
-  tc.hidden = !who; tc.innerHTML = who ? cat(who, mood) : '';
-  t.querySelector('.tm').textContent = msg;
+function toast(msg, label, fn) {
+  const t = $('#toast');
+  t.querySelector('span').textContent = msg;
   const b = t.querySelector('button');
   b.hidden = !label; b.textContent = label || '';
   b.onclick = () => { t.classList.remove('show'); fn && fn(); };
@@ -1794,8 +1689,8 @@ function act(el, e) {
     case 'evcal': { const ev = evGet(id); if (ev) evCalendar(ev); break; }
     case 'evshare': {
       const ev = evGet(id); if (!ev) break;
-      if (navigator.share) navigator.share({ title: ev.t, url: ev.u }).catch(() => {});
-      else { navigator.clipboard && navigator.clipboard.writeText(ev.u); toast('Link copiado.'); }
+      if (navigator.share) navigator.share({ title: ev.t, url: ev.ru || ev.u }).catch(() => {});
+      else { navigator.clipboard && navigator.clipboard.writeText(ev.ru || ev.u); toast('Link copiado.'); }
       break;
     }
     case 'evhide': {
@@ -1901,7 +1796,7 @@ document.addEventListener('visibilitychange', () => {
   if (FEED && Date.now() - Date.parse(FEED.updated) > 2.5 * 3600e3) loadFeed().then(ok => { if (ok && cur === 'feed' && window.scrollY < 200) renderFeedView(); });
   if (!EVD || Date.now() - Date.parse(EVD.updated) > 2.5 * 3600e3) loadEvents().then(ok => {
     if (!ok) return;
-    if (cur === 'events') renderEvents(); else { pingEvents(); if (cur === 'feed') refreshHello(); }
+    if (cur === 'events') renderEvents(); else pingEvents();
   });
 });
 
@@ -1912,7 +1807,6 @@ window.addEventListener('resize', setHdr);
 new MutationObserver(() => { const m = $('#more'); if (m && !m._obs) { m._obs = 1; moreObs.disconnect(); moreObs.observe(m); } }).observe($('#v-feed'), { childList: true });
 (async function boot() {
   setHdr();
-  $('#wcat').innerHTML = cat('umberto');
   // primeira vez com a agenda: o que chegou nos últimos 5 dias conta como novidade
   if (!S.ev.seen) { S.ev.seen = Date.now() - 5 * 864e5; save(); }
   for (const id in S.ev.hidden) if (Date.now() - S.ev.hidden[id] > 120 * 864e5) delete S.ev.hidden[id];
@@ -1923,8 +1817,7 @@ new MutationObserver(() => { const m = $('#more'); if (m && !m._obs) { m._obs = 
   const had = !!FEED;
   const [ok] = await Promise.all([loadFeed(), loadEvents()]);
   if (ok && cur === 'feed' && (!had || window.scrollY < 120)) renderFeedView();
-  else if (cur === 'feed') refreshHello();
-  if (!ok && !had) $('#v-feed').innerHTML = `<div class="empty">${cat('umberto', 'sleep', true)}<b>Sem conexão.</b>Abra de novo quando tiver internet para baixar as primeiras matérias.</div>`;
+  if (!ok && !had) $('#v-feed').innerHTML = `<div class="empty"><b>Sem conexão.</b>Abra de novo quando tiver internet para baixar as primeiras matérias.</div>`;
   renderRing();
   if (cur === 'events') renderEvents();
   setTimeout(pingEvents, 1200);
